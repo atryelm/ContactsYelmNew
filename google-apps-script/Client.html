@@ -1,0 +1,1780 @@
+(function () {
+  var CACHE_KEY = 'contacts_cache_v6';
+  var TOKEN_KEY = 'admin_token_v1';
+  var THEME_KEY = 'theme_v1';
+  var INSTALL_DISMISS_KEY = 'install_banner_dismiss_v1';
+  var THEME_COLORS = { light: '#0f1d42', dark: '#080f24' };
+  function setBrandLogoSrc_(el, src) {
+    if (!el || !src) return;
+    el.removeAttribute('alt');
+    el.src = String(src).trim();
+    el.dataset.logoLoaded = '1';
+  }
+
+  function logoSrcFromBootstrapData_(d) {
+    if (!d) return '';
+    if (d.type === 'dataUri' && d.src) return String(d.src);
+    if (d.type === 'base64' && d.parts && d.parts.length) {
+      return 'data:image/png;base64,' + d.parts.join('');
+    }
+    return '';
+  }
+
+  function applyBrandLogoPayload_(img, d) {
+    if (!img || !d) return false;
+    function setData() {
+      var src = logoSrcFromBootstrapData_(d);
+      if (src) {
+        setBrandLogoSrc_(img, src);
+        return true;
+      }
+      return false;
+    }
+    if (setData()) return true;
+    if (d.iconUrl) {
+      setBrandLogoSrc_(img, d.iconUrl);
+      return true;
+    }
+    return false;
+  }
+
+  function getLogoDataUriFromBootstrap_() {
+    var boot = document.getElementById('brand-logo-bootstrap');
+    if (!boot) return '';
+    try {
+      return logoSrcFromBootstrapData_(JSON.parse(boot.textContent || 'null'));
+    } catch (e) {}
+    return '';
+  }
+
+  function getPwaIconHrefFromBootstrap_() {
+    var boot = document.getElementById('brand-logo-bootstrap');
+    if (!boot) return '';
+    try {
+      var d = JSON.parse(boot.textContent || 'null');
+      return d.pwaIconUrl ? String(d.pwaIconUrl) : '';
+    } catch (e) {}
+    return '';
+  }
+
+  function installPwaHeadIcons_() {
+    var href = getPwaIconHrefFromBootstrap_();
+    if (
+      !href ||
+      /^data:/i.test(href) ||
+      /script\.google\.com/i.test(href) ||
+      document.documentElement.dataset.pwaIcons === '1'
+    ) {
+      return;
+    }
+    document.documentElement.dataset.pwaIcons = '1';
+    function addLink(rel, sizes) {
+      var l = document.createElement('link');
+      l.rel = rel;
+      l.type = 'image/png';
+      if (sizes) l.setAttribute('sizes', sizes);
+      l.href = href;
+      document.head.appendChild(l);
+    }
+    addLink('icon', '192x192');
+    addLink('shortcut icon', '192x192');
+    addLink('apple-touch-icon', '180x180');
+    addLink('apple-touch-icon', '192x192');
+    addLink('apple-touch-icon', '512x512');
+  }
+
+  function loadBrandLogoFromBootstrap() {
+    var boot = document.getElementById('brand-logo-bootstrap');
+    var img = document.getElementById('brand-logo');
+    if (!boot || !img || img.dataset.logoLoaded === '1') return false;
+    try {
+      return applyBrandLogoPayload_(img, JSON.parse(boot.textContent || 'null'));
+    } catch (e) {}
+    return false;
+  }
+
+  /** גיבוי onerror / טעינה כושלת */
+  window.__logoFallback = function (el) {
+    if (!el || el.dataset.logoFallback === '1') return;
+    el.dataset.logoFallback = '1';
+    if (loadBrandLogoFromBootstrap()) return;
+    if (typeof google === 'undefined' || !google.script || !google.script.run) return;
+    gasRun('getBrandLogoBootstrapPublic')
+      .then(function (d) {
+        applyBrandLogoPayload_(el, d);
+      })
+      .catch(function () {
+        gasRun('getBrandLogoBase64Public')
+          .then(function (src) {
+            if (src) setBrandLogoSrc_(el, src);
+          })
+          .catch(function () {
+            gasRun('getFallbackLogoDataUriPublic')
+              .then(function (src) {
+                if (src) setBrandLogoSrc_(el, src);
+              })
+              .catch(function () {});
+          });
+      });
+  };
+
+  function applyBrandLogo() {
+    if (loadBrandLogoFromBootstrap()) return;
+    var el = document.getElementById('brand-logo');
+    if (!el || el.tagName !== 'IMG') return;
+    if (el.complete && el.naturalWidth > 0) return;
+    window.__logoFallback(el);
+  }
+  var PHONE_REGEX = /^(?:\+972-\d{1,2}-\d{7}|0\d{1,2}-\d{7})$/;
+  var SEARCH_DELAY = 100;
+  var HEB_FINALS = { 'ך': 'כ', 'ם': 'מ', 'ן': 'נ', 'ף': 'פ', 'ץ': 'צ' };
+  var VIRTUAL_ROW_H = { header: 36, card: 92 };
+  var deferredInstallPrompt = null;
+  var virtualObserver = null;
+  var focusTrapHandler = null;
+  var focusTrapDialog = null;
+  var focusTrapPrev = null;
+
+  var state = {
+    contacts: [],
+    filtered: [],
+    selectedIds: {},
+    selectMode: false,
+    selectedContact: null,
+    adminToken: null,
+    lastSearchQuery: '',
+    syncing: false,
+    skeleton: true,
+    pendingAction: null,
+    displayRows: [],
+    renderGen: 0,
+  };
+
+  var els = {
+    app: document.getElementById('app'),
+    syncBadge: document.getElementById('sync-badge'),
+    skeleton: document.getElementById('skeleton'),
+    list: document.getElementById('contact-list'),
+    empty: document.getElementById('empty-state'),
+    search: document.getElementById('search'),
+    searchClear: document.getElementById('search-clear'),
+    stats: document.getElementById('stats'),
+    btnTheme: document.getElementById('btn-theme'),
+    btnRefresh: document.getElementById('btn-refresh'),
+    btnSelectMode: document.getElementById('btn-select-mode'),
+    btnAdmin: document.getElementById('btn-admin'),
+    letterNav: document.getElementById('letter-nav'),
+    btnScrollTop: document.getElementById('btn-scroll-top'),
+    fabMain: document.getElementById('fab-main'),
+    fabWrap: document.getElementById('fab-wrap'),
+    fabAdd: document.getElementById('fab-add'),
+    fabImport: document.getElementById('fab-import'),
+    fabDedupe: document.getElementById('fab-dedupe'),
+    selectBar: document.getElementById('select-bar'),
+    selectCount: document.getElementById('select-count'),
+    btnSelectAll: document.getElementById('btn-select-all'),
+    btnExport: document.getElementById('btn-export'),
+    btnSelectCancel: document.getElementById('btn-select-cancel'),
+    authDialog: document.getElementById('auth-dialog'),
+    authForm: document.getElementById('auth-form'),
+    authCancel: document.getElementById('auth-cancel'),
+    actionDialog: document.getElementById('action-dialog'),
+    actionAvatar: document.getElementById('action-avatar'),
+    actionName: document.getElementById('action-name'),
+    actionPhone: document.getElementById('action-phone'),
+    actionClose: document.getElementById('action-close'),
+    btnCall: document.getElementById('btn-call'),
+    btnWhatsapp: document.getElementById('btn-whatsapp'),
+    btnSaveDevice: document.getElementById('btn-save-device'),
+    btnCopy: document.getElementById('btn-copy'),
+    btnInstall: document.getElementById('btn-install'),
+    installDialog: document.getElementById('install-dialog'),
+    installStepsIos: document.getElementById('install-steps-ios'),
+    installStepsAndroid: document.getElementById('install-steps-android'),
+    installStepsDesktop: document.getElementById('install-steps-desktop'),
+    btnInstallNative: document.getElementById('btn-install-native'),
+    btnInstallNativeDesk: document.getElementById('btn-install-native-desk'),
+    installClose: document.getElementById('install-close'),
+    addDialog: document.getElementById('add-dialog'),
+    addForm: document.getElementById('add-form'),
+    addCancel: document.getElementById('add-cancel'),
+    addSubmit: document.getElementById('add-submit'),
+    btnText: document.querySelector('#add-submit .btn-text'),
+    btnSpinner: document.querySelector('#add-submit .btn-spinner'),
+    importDialog: document.getElementById('import-dialog'),
+    importFile: document.getElementById('import-file'),
+    btnPickDevice: document.getElementById('btn-pick-device'),
+    importClose: document.getElementById('import-close'),
+    toast: document.getElementById('toast'),
+  };
+
+  var searchTimer = null;
+  var toastTimer = null;
+
+  function setState(patch, opts) {
+    var k = Object.keys(patch);
+    for (var i = 0; i < k.length; i++) state[k[i]] = patch[k[i]];
+    if (!opts || opts.render !== false) renderApp();
+  }
+
+  function renderApp() {
+    updateAdminUI();
+    setSyncing(state.syncing);
+    setSkeleton(state.skeleton);
+    if (!state.selectMode) updateStats(state.filtered.length, state.lastSearchQuery);
+    renderVirtualList();
+  }
+
+  function openDialog(dialog) {
+    if (!dialog) return;
+    focusTrapPrev = document.activeElement;
+    document.body.classList.add('scroll-lock');
+    dialog.classList.add('dialog-open');
+    dialog.showModal();
+    trapFocusIn(dialog);
+    var first = dialog.querySelector('input, button, [href], select, textarea');
+    if (first) setTimeout(function () { first.focus(); }, 80);
+    dialog.addEventListener(
+      'close',
+      function () {
+        document.body.classList.remove('scroll-lock');
+        dialog.classList.remove('dialog-open');
+        releaseFocusTrap();
+        if (focusTrapPrev && focusTrapPrev.focus) focusTrapPrev.focus();
+      },
+      { once: true }
+    );
+  }
+
+  function closeDialog(dialog) {
+    if (dialog && dialog.open) dialog.close();
+  }
+
+  function trapFocusIn(dialog) {
+    releaseFocusTrap();
+    focusTrapDialog = dialog;
+    focusTrapHandler = function (e) {
+      if (e.key !== 'Tab' || !dialog.open) return;
+      var sel = 'button:not([disabled]), [href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
+      var nodes = Array.prototype.slice.call(dialog.querySelectorAll(sel));
+      if (!nodes.length) return;
+      var first = nodes[0];
+      var last = nodes[nodes.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', focusTrapHandler);
+  }
+
+  function releaseFocusTrap() {
+    if (focusTrapHandler) document.removeEventListener('keydown', focusTrapHandler);
+    focusTrapHandler = null;
+    focusTrapDialog = null;
+  }
+
+  function fullName(c) {
+    var a = c.firstName ? String(c.firstName) : '';
+    var b = c.lastName ? String(c.lastName) : '';
+    return (a + ' ' + b).trim();
+  }
+
+  function initial(c) {
+    var n = fullName(c);
+    return n ? n.charAt(0).toUpperCase() : '?';
+  }
+
+  function phoneDigits(p) {
+    var d = String(p || '').replace(/\D/g, '');
+    if (d.length === 12 && d.indexOf('972') === 0) d = '0' + d.slice(3);
+    if (d.length === 9 && d.charAt(0) !== '0') d = '0' + d;
+    return d;
+  }
+
+  function contactKey(c) {
+    var d = phoneDigits(c.phone);
+    if (d.length >= 9) return 'p:' + d;
+    return 'n:' + normalizeSearchText(fullName(c));
+  }
+
+  function normalizeSearchText(s) {
+    return String(s || '')
+      .toLowerCase()
+      .replace(/[\u0591-\u05c7]/g, '')
+      .replace(/[ךםןףץ]/g, function (ch) {
+        return HEB_FINALS[ch] || ch;
+      })
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function normalizeContact(c) {
+    return {
+      id: String((c && c.id) || ''),
+      firstName: String((c && c.firstName) || '')
+        .trim()
+        .replace(/\s+/g, ' '),
+      lastName: String((c && c.lastName) || '')
+        .trim()
+        .replace(/\s+/g, ' '),
+      phone: normalizePhoneLocal(c && c.phone),
+      email: String((c && c.email) || '')
+        .trim()
+        .toLowerCase(),
+    };
+  }
+
+  function contactScore(c) {
+    var s = 0;
+    if (c.firstName) s += 2;
+    if (c.lastName) s += 2;
+    if (PHONE_REGEX.test(c.phone || '')) s += 5;
+    if (c.email) s += 1;
+    return s;
+  }
+
+  function contactDedupeKey(c) {
+    var d = phoneDigits(c.phone);
+    if (d.length >= 9) return 'p:' + d;
+    var name = normalizeSearchText(fullName(c));
+    if (name) return 'n:' + name;
+    return 'id:' + String(c.id || '');
+  }
+
+  function nameHue(name) {
+    var h = 0;
+    var s = name || '?';
+    for (var i = 0; i < s.length; i++) h = s.charCodeAt(i) + ((h << 5) - h);
+    return Math.abs(h) % 360;
+  }
+
+  function avatarGradient(name) {
+    var hue = nameHue(name);
+    var h2 = (hue + 48) % 360;
+    return 'linear-gradient(135deg, hsl(' + hue + ',58%,42%), hsl(' + h2 + ',52%,32%))';
+  }
+
+  function dedupeAndSort(list) {
+    var map = {};
+    (list || []).forEach(function (c) {
+      var n = normalizeContact(c);
+      if (!n.firstName && !n.lastName && !n.phone) return;
+      var key = contactDedupeKey(n);
+      if (!map[key] || contactScore(n) > contactScore(map[key])) map[key] = n;
+    });
+    var out = Object.keys(map).map(function (k) {
+      return map[k];
+    });
+    return out.sort(function (a, b) {
+      var na = fullName(a);
+      var nb = fullName(b);
+      try {
+        return na.localeCompare(nb, 'he');
+      } catch (e) {
+        return na < nb ? -1 : na > nb ? 1 : 0;
+      }
+    });
+  }
+
+  function firstLetter(name) {
+    var t = (name || '').trim();
+    if (!t) return '#';
+    var c = t.charAt(0);
+    if (c >= '\u05d0' && c <= '\u05ea') return c;
+    if (/[a-zA-Z]/.test(c)) return c.toUpperCase();
+    return '#';
+  }
+
+  function scoreContact(c, tokens, rawQ) {
+    if (!tokens.length && rawQ.replace(/\D/g, '').length < 3) return 1;
+    var name = normalizeSearchText(fullName(c));
+    var fn = normalizeSearchText(c.firstName);
+    var ln = normalizeSearchText(c.lastName);
+    var phone = phoneDigits(c.phone);
+    var email = normalizeSearchText(c.email);
+    var qDigits = rawQ.replace(/\D/g, '');
+    var score = 0;
+
+    tokens.forEach(function (t) {
+      if (!t) return;
+      if (name.indexOf(t) >= 0) score += 12;
+      if (fn.indexOf(t) === 0) score += 18;
+      if (ln.indexOf(t) === 0) score += 16;
+      if (email.indexOf(t) >= 0) score += 8;
+      var td = phoneDigits(t);
+      if (td.length >= 2 && phone.indexOf(td) >= 0) score += 22;
+    });
+
+    if (qDigits.length >= 3 && phone.indexOf(qDigits) >= 0) score += 28;
+
+    var parts = name.split(' ').filter(Boolean);
+    if (tokens.length >= 2 && parts.length >= 2) {
+      if (parts[0].charAt(0) === tokens[0].charAt(0) && parts[1].charAt(0) === tokens[1].charAt(0)) {
+        score += 14;
+      }
+    }
+
+    return score;
+  }
+
+  function setHighlightedText(el, text, query) {
+    el.textContent = '';
+    if (!text) return;
+    if (!query) {
+      el.textContent = text;
+      return;
+    }
+    var lower = text.toLowerCase();
+    var qi = lower.indexOf(query.toLowerCase());
+    if (qi < 0) {
+      el.textContent = text;
+      return;
+    }
+    el.appendChild(document.createTextNode(text.slice(0, qi)));
+    var mark = document.createElement('mark');
+    mark.textContent = text.slice(qi, qi + query.length);
+    el.appendChild(mark);
+    el.appendChild(document.createTextNode(text.slice(qi + query.length)));
+  }
+
+  function loadCache() {
+    try {
+      var raw = localStorage.getItem(CACHE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function saveCache(list) {
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify(list));
+    } catch (e) {}
+  }
+
+  function loadToken() {
+    try {
+      return sessionStorage.getItem(TOKEN_KEY) || null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function saveToken(t) {
+    try {
+      if (t) sessionStorage.setItem(TOKEN_KEY, t);
+      else sessionStorage.removeItem(TOKEN_KEY);
+    } catch (e) {}
+    setState({ adminToken: t }, { render: false });
+    updateAdminUI();
+  }
+
+  function isAdmin() {
+    return !!state.adminToken;
+  }
+
+  function useApiTransport_() {
+    if (window.PWA_API_URL) return true;
+    try {
+      var cfg = loadAppConfig();
+      if (cfg && cfg.pwaHost) return true;
+    } catch (e) {}
+    if (typeof google === 'undefined' || !google.script || !google.script.run) return true;
+    return !/script\.google\.com$/i.test(location.hostname || '');
+  }
+
+  function getApiBaseUrl_() {
+    if (window.PWA_API_URL) return String(window.PWA_API_URL).replace(/\/$/, '').split('?')[0];
+    var cfg = loadAppConfig();
+    if (cfg && cfg.apiUrl) return String(cfg.apiUrl).replace(/\/$/, '').split('?')[0];
+    return '';
+  }
+
+  function apiFetchJson_(url, options) {
+    return fetch(url, options || {}).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    });
+  }
+
+  function gasPost_(body) {
+    return apiFetchJson_(getApiBaseUrl_(), {
+      method: 'POST',
+      redirect: 'follow',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(body),
+    });
+  }
+
+  function gasRun(fnName) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    if (!useApiTransport_()) {
+      return new Promise(function (resolve, reject) {
+        var runner = google.script.run.withSuccessHandler(resolve).withFailureHandler(reject);
+        runner[fnName].apply(runner, args);
+      });
+    }
+    var base = getApiBaseUrl_();
+    if (!base) {
+      return Promise.reject(new Error('חסר כתובת API – ערוך config.js והדבק את כתובת /exec'));
+    }
+    switch (fnName) {
+      case 'listContactsPublic':
+        return apiFetchJson_(base + '?action=list', { method: 'GET', redirect: 'follow' });
+      case 'verifyPasswordPublic':
+        return gasPost_({ action: 'verify', password: args[0] });
+      case 'addContactPublic':
+        return gasPost_({ action: 'add', token: args[0], contact: args[1] });
+      case 'importContactsPublic':
+        return gasPost_({ action: 'import', token: args[0], contacts: args[1] });
+      case 'dedupeSheetPublic':
+        return gasPost_({ action: 'dedupe', token: args[0] });
+      case 'getBrandLogoBootstrapPublic':
+        return apiFetchJson_(base + '?action=logo', { method: 'GET', redirect: 'follow' });
+      case 'getBrandLogoBase64Public':
+        return apiFetchJson_(base + '?action=logo', { method: 'GET', redirect: 'follow' }).then(function (d) {
+          if (d.type === 'dataUri' && d.src) return d.src;
+          if (d.type === 'base64' && d.parts && d.parts.length) {
+            return 'data:image/png;base64,' + d.parts.join('');
+          }
+          return '';
+        });
+      case 'getFallbackLogoDataUriPublic':
+        return Promise.resolve('');
+      default:
+        return Promise.reject(new Error('לא נתמך ב-API: ' + fnName));
+    }
+  }
+
+  function showToast(msg) {
+    els.toast.textContent = msg;
+    els.toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      els.toast.classList.remove('show');
+    }, 2600);
+  }
+
+  function setToolBtnLabel(btn, label) {
+    if (!btn) return;
+    var el = btn.querySelector('.tool-label');
+    if (el) el.textContent = label;
+    btn.setAttribute('aria-label', label);
+    btn.setAttribute('title', label);
+  }
+
+  function updateAdminUI() {
+    var on = !!state.adminToken;
+    if (els.btnAdmin) {
+      els.btnAdmin.classList.toggle('unlocked', on);
+      setToolBtnLabel(els.btnAdmin, on ? 'יציאה מניהול' : 'כניסת ניהול');
+    }
+    if (els.fabWrap) els.fabWrap.classList.toggle('hidden', !on);
+  }
+
+  function requireAdmin(action) {
+    if (isAdmin()) {
+      action();
+      return;
+    }
+    setState({ pendingAction: action }, { render: false });
+    els.authForm.reset();
+    openDialog(els.authDialog);
+  }
+
+  function setSyncing(on) {
+    els.syncBadge.classList.toggle('hidden', !on);
+  }
+
+  function setSkeleton(on) {
+    if (els.skeleton) els.skeleton.classList.toggle('hidden', !on);
+    if (els.list) {
+      els.list.classList.remove('hidden');
+      els.list.style.display = on ? 'none' : 'flex';
+    }
+  }
+
+  function updateStats(count, query) {
+    if (state.selectMode) return;
+    if (query) {
+      els.stats.textContent = count + ' תוצאות מתוך ' + state.contacts.length;
+    } else {
+      els.stats.textContent = count + ' אנשי קשר';
+    }
+  }
+
+  function updateSelectCount() {
+    var n = Object.keys(state.selectedIds).length;
+    els.selectCount.textContent = n + ' נבחרו';
+  }
+
+  function textEl(tag, className, text) {
+    var el = document.createElement(tag);
+    if (className) el.className = className;
+    if (text != null) el.textContent = text;
+    return el;
+  }
+
+  function buildCard(contact) {
+    var li = document.createElement('li');
+    var key = contactKey(contact);
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'contact-card';
+    if (state.selectMode) btn.className += ' select-mode';
+    if (state.selectedIds[key]) btn.className += ' selected';
+    btn.dataset.letter = firstLetter(fullName(contact));
+
+    if (state.selectMode) {
+      var chk = document.createElement('input');
+      chk.type = 'checkbox';
+      chk.className = 'card-check';
+      chk.checked = !!state.selectedIds[key];
+      chk.onclick = function (e) {
+        e.stopPropagation();
+        toggleSelect(contact);
+      };
+      btn.appendChild(chk);
+    }
+
+    var avatar = textEl('span', 'avatar', initial(contact));
+    avatar.style.background = avatarGradient(fullName(contact));
+    var info = document.createElement('span');
+    info.className = 'contact-info';
+    var nameEl = document.createElement('p');
+    nameEl.className = 'contact-name';
+    setHighlightedText(nameEl, fullName(contact) || 'ללא שם', state.lastSearchQuery);
+    var phoneEl = document.createElement('p');
+    phoneEl.className = 'contact-phone';
+    setHighlightedText(phoneEl, contact.phone || '', state.lastSearchQuery);
+    info.appendChild(nameEl);
+    info.appendChild(phoneEl);
+    if (contact.email) {
+      var emailEl = document.createElement('p');
+      emailEl.className = 'contact-email';
+      emailEl.textContent = contact.email;
+      info.appendChild(emailEl);
+    }
+
+    btn.appendChild(avatar);
+    btn.appendChild(info);
+
+    if (!state.selectMode) {
+      btn.appendChild(textEl('span', 'contact-chevron', '‹'));
+    }
+
+    btn.addEventListener('pointerdown', function (e) {
+      var r = btn.getBoundingClientRect();
+      btn.style.setProperty('--rx', ((e.clientX - r.left) / r.width) * 100 + '%');
+      btn.style.setProperty('--ry', ((e.clientY - r.top) / r.height) * 100 + '%');
+    });
+
+    btn.onclick = function () {
+      if (state.selectMode) toggleSelect(contact);
+      else openAction(contact);
+    };
+    li.appendChild(btn);
+    li.id = 'contact-' + key.replace(/[^a-zA-Z0-9_-]/g, '_');
+    return li;
+  }
+
+  function buildSectionHeader(letter) {
+    var el = document.createElement('div');
+    el.className = 'list-section-header';
+    el.id = 'section-' + letter;
+    el.textContent = letter;
+    return el;
+  }
+
+  function scrollToLetter(letter) {
+    if (!els.list || !state.displayRows.length) return;
+    for (var i = 0; i < state.displayRows.length; i++) {
+      var row = state.displayRows[i];
+      if (row.type === 'header' && row.letter === letter) {
+        var slot = els.list.children[i];
+        if (!slot) return;
+        mountVirtualSlot(slot);
+        var target = slot.querySelector('.list-section-header') || slot;
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+    }
+  }
+
+  function toggleSelect(contact) {
+    var key = contactKey(contact);
+    var next = Object.assign({}, state.selectedIds);
+    if (next[key]) delete next[key];
+    else next[key] = contact;
+    setState({ selectedIds: next }, { render: false });
+    updateSelectCount();
+    computeFilter();
+  }
+
+  function buildDisplayRows(items) {
+    var rows = [];
+    var showSections = !state.lastSearchQuery && !state.selectMode;
+    var lastLetter = '';
+    (items || []).forEach(function (c) {
+      if (showSections) {
+        var letter = firstLetter(fullName(c));
+        if (letter !== lastLetter) {
+          lastLetter = letter;
+          rows.push({ type: 'header', letter: letter });
+        }
+      }
+      rows.push({ type: 'card', contact: c });
+    });
+    return rows;
+  }
+
+  function mountVirtualSlot(slot) {
+    if (slot.dataset.mounted === '1') return;
+    var idx = parseInt(slot.dataset.index, 10);
+    var row = state.displayRows[idx];
+    if (!row) return;
+    slot.innerHTML = '';
+    slot.className = 'virtual-slot virtual-slot--' + row.type;
+    if (row.type === 'header') {
+      slot.appendChild(buildSectionHeader(row.letter));
+    } else {
+      var cardLi = buildCard(row.contact);
+      while (cardLi.firstChild) slot.appendChild(cardLi.firstChild);
+      slot.classList.add('stagger-in');
+      slot.style.animationDelay = Math.min((idx % 12) * 0.03, 0.35) + 's';
+    }
+    slot.dataset.mounted = '1';
+  }
+
+  function unmountVirtualSlot(slot) {
+    if (slot.dataset.mounted !== '1') return;
+    var row = state.displayRows[parseInt(slot.dataset.index, 10)];
+    slot.innerHTML = '';
+    slot.className = 'virtual-slot virtual-slot--' + (row ? row.type : 'card');
+    slot.style.minHeight = (row && row.type === 'header' ? VIRTUAL_ROW_H.header : VIRTUAL_ROW_H.card) + 'px';
+    slot.dataset.mounted = '0';
+  }
+
+  function setupVirtualObserver() {
+    if (virtualObserver) virtualObserver.disconnect();
+    if (!('IntersectionObserver' in window) || !els.list) {
+      state.displayRows.forEach(function (row, i) {
+        var slot = els.list.children[i];
+        if (slot) mountVirtualSlot(slot);
+      });
+      return;
+    }
+    virtualObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) mountVirtualSlot(entry.target);
+          else unmountVirtualSlot(entry.target);
+        });
+      },
+      { root: null, rootMargin: '280px 0px 280px 0px', threshold: 0 }
+    );
+    Array.prototype.forEach.call(els.list.querySelectorAll('.virtual-slot'), function (slot) {
+      virtualObserver.observe(slot);
+    });
+  }
+
+  function renderVirtualList() {
+    if (!els.list) return;
+    state.renderGen++;
+    var gen = state.renderGen;
+    if (virtualObserver) virtualObserver.disconnect();
+    els.list.innerHTML = '';
+    if (els.empty) els.empty.classList.add('hidden');
+    if (els.letterNav) els.letterNav.classList.add('hidden');
+    var items = state.filtered;
+    if (!items || !items.length) {
+      if (els.empty) els.empty.classList.remove('hidden');
+      return;
+    }
+    state.displayRows = buildDisplayRows(items);
+    var frag = document.createDocumentFragment();
+    state.displayRows.forEach(function (row, i) {
+      var slot = document.createElement('li');
+      slot.className = 'virtual-slot virtual-slot--' + row.type;
+      slot.dataset.index = String(i);
+      slot.dataset.mounted = '0';
+      slot.style.minHeight = (row.type === 'header' ? VIRTUAL_ROW_H.header : VIRTUAL_ROW_H.card) + 'px';
+      frag.appendChild(slot);
+    });
+    els.list.appendChild(frag);
+    els.list.style.display = 'flex';
+    els.list.classList.remove('hidden');
+    if (gen === state.renderGen) {
+      setupVirtualObserver();
+      buildLetterNav(items);
+    }
+  }
+
+  function buildLetterNav(items) {
+    if (!els.letterNav || state.lastSearchQuery || state.selectMode) {
+      if (els.letterNav) els.letterNav.classList.add('hidden');
+      return;
+    }
+    var letters = [];
+    var seen = {};
+    items.forEach(function (c) {
+      var L = firstLetter(fullName(c));
+      if (!seen[L]) {
+        seen[L] = true;
+        letters.push(L);
+      }
+    });
+    if (letters.length < 4) {
+      els.letterNav.classList.add('hidden');
+      return;
+    }
+    els.letterNav.innerHTML = '';
+    letters.forEach(function (L) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = L;
+      b.setAttribute('aria-label', 'קפיצה לאות ' + L);
+      b.onclick = function () {
+        scrollToLetter(L);
+      };
+      els.letterNav.appendChild(b);
+    });
+    els.letterNav.classList.remove('hidden');
+  }
+
+  function computeFilter() {
+    var q = els.search.value.trim();
+    var qNorm = normalizeSearchText(q);
+    var tokens = qNorm ? qNorm.split(' ').filter(Boolean) : [];
+    els.searchClear.classList.toggle('hidden', !q);
+
+    var base = state.contacts.slice();
+
+    var filtered;
+    if (tokens.length || q.replace(/\D/g, '').length >= 3) {
+      filtered = base
+        .map(function (c) {
+          return { c: c, s: scoreContact(c, tokens, q) };
+        })
+        .filter(function (x) {
+          return x.s > 0;
+        })
+        .sort(function (a, b) {
+          return b.s - a.s;
+        })
+        .map(function (x) {
+          return x.c;
+        });
+    } else {
+      filtered = base;
+    }
+
+    setState({ lastSearchQuery: q, filtered: filtered });
+  }
+
+  function applyFilter() {
+    computeFilter();
+  }
+
+  function runDedupeSheet() {
+    if (!isAdmin()) {
+      requireAdmin(runDedupeSheet);
+      return;
+    }
+    if (!confirm('לנקות כפילויות מהגיליון ולתקן פורמט טלפון? פעולה זו לא ניתנת לביטול.')) return;
+    showToast('מנקה כפילויות...');
+    gasRun('dedupeSheetPublic', state.adminToken)
+      .then(function (res) {
+        if (!res.ok) {
+          showToast(res.error || 'שגיאה');
+          return;
+        }
+        showToast('הוסרו ' + (res.removed || 0) + ' כפילויות · ' + res.total + ' נשארו');
+        refreshFromServer();
+      })
+      .catch(function (err) {
+        showToast('שגיאה: ' + (err.message || err));
+      });
+  }
+
+  function openAction(contact) {
+    setState({ selectedContact: contact }, { render: false });
+    var name = fullName(contact);
+    els.actionName.textContent = name || 'ללא שם';
+    els.actionPhone.textContent = contact.phone || '';
+    if (contact.email) els.actionPhone.textContent += (contact.phone ? ' · ' : '') + contact.email;
+    els.actionAvatar.textContent = initial(contact);
+    els.actionAvatar.style.background = avatarGradient(name);
+    openDialog(els.actionDialog);
+  }
+
+  function openAdd() {
+    els.addForm.reset();
+    els.addSubmit.disabled = false;
+    els.btnText.classList.remove('hidden');
+    els.btnSpinner.classList.add('hidden');
+    openDialog(els.addDialog);
+    setTimeout(function () {
+      var f = els.addForm.querySelector('input[name="name"]');
+      if (f) f.focus();
+    }, 350);
+  }
+
+  function openImport() {
+    openDialog(els.importDialog);
+  }
+
+  function enterSelectMode() {
+    if (els.app) els.app.classList.add('selecting');
+    els.selectBar.classList.remove('hidden');
+    if (els.btnSelectMode) {
+      els.btnSelectMode.classList.add('active');
+      setToolBtnLabel(els.btnSelectMode, 'סיום');
+    }
+    setState({ selectMode: true, selectedIds: {} }, { render: false });
+    updateSelectCount();
+    computeFilter();
+  }
+
+  function exitSelectMode() {
+    if (els.app) els.app.classList.remove('selecting');
+    els.selectBar.classList.add('hidden');
+    if (els.btnSelectMode) {
+      els.btnSelectMode.classList.remove('active');
+      setToolBtnLabel(els.btnSelectMode, 'בחירה');
+    }
+    setState({ selectMode: false, selectedIds: {} });
+  }
+
+  function getSelectedList() {
+    return Object.keys(state.selectedIds).map(function (k) {
+      return state.selectedIds[k];
+    });
+  }
+
+  function normalizePhone(phone) {
+    var digits = phone.replace(/\D/g, '');
+    if (phone.indexOf('+') === 0) return phone.slice(1);
+    if (digits.indexOf('0') === 0) return '972' + digits.slice(1);
+    return '972' + digits;
+  }
+
+  function formatPhoneInput(val) {
+    var raw = String(val || '').trim();
+    if (raw.indexOf('+') === 0) {
+      var digits = raw.replace(/\D/g, '');
+      if (digits.indexOf('972') !== 0) return raw;
+      var local = digits.slice(3).slice(0, 10);
+      if (!local.length) return '+972-';
+      var areaLen = local.charAt(0) === '0' ? 2 : 1;
+      var area = local.slice(0, areaLen);
+      var num = local.slice(areaLen, areaLen + 7);
+      return '+972-' + area + (num.length ? '-' + num : '');
+    }
+    var d = raw.replace(/\D/g, '').slice(0, 10);
+    if (!d.length) return '';
+    if (d.length <= 3) return d;
+    if (d.charAt(0) === '0') return d.slice(0, 3) + '-' + d.slice(3);
+    return d;
+  }
+
+  function normalizePhoneLocal(p) {
+    var raw = String(p || '').trim();
+    if (/^(?:\+972-\d{1,2}-\d{7}|0\d{1,2}-\d{7})$/.test(raw)) return raw;
+    var d = raw.replace(/\D/g, '');
+    if (raw.indexOf('+972') === 0 || (d.indexOf('972') === 0 && d.length >= 11)) {
+      var local = d.indexOf('972') === 0 ? d.slice(3) : d;
+      if (local.length === 9) return '+972-' + local.charAt(0) + '-' + local.slice(1);
+      if (local.length === 10 && local.charAt(0) === '0') {
+        return '+972-' + local.charAt(1) + '-' + local.slice(2);
+      }
+    }
+    if (d.length === 10 && d.charAt(0) === '0') return d.slice(0, 3) + '-' + d.slice(3);
+    if (d.length === 9) return '0' + d.charAt(0) + '-' + d.slice(1);
+    return raw;
+  }
+
+  function parseCsv(text) {
+    var lines = text.split(/\r?\n/).filter(function (l) {
+      return l.trim();
+    });
+    if (!lines.length) return [];
+    var out = [];
+    var start = 0;
+    var first = lines[0].toLowerCase();
+    if (first.indexOf('first') >= 0 || first.indexOf('שם') >= 0 || first.indexOf('id') === 0) start = 1;
+    for (var i = start; i < lines.length; i++) {
+      var parts = lines[i].split(',');
+      if (parts.length < 3) continue;
+      var id = parts[0];
+      var fn = parts[1];
+      var ln = parts[2];
+      var ph = parts[3];
+      if (!ph && parts.length >= 3 && /^\d/.test(parts[2])) {
+        fn = parts[0];
+        ln = '';
+        ph = parts[1];
+      }
+      out.push({
+        firstName: String(fn || '').trim(),
+        lastName: String(ln || '').trim(),
+        phone: normalizePhoneLocal(ph),
+        email: String(parts[4] || '').trim(),
+      });
+    }
+    return out;
+  }
+
+  function parseVcard(text) {
+    var out = [];
+    var blocks = text.split(/BEGIN:VCARD/i);
+    blocks.forEach(function (block) {
+      if (!block.trim()) return;
+      var fn = '';
+      var ln = '';
+      var phone = '';
+      var email = '';
+      block.split(/\r?\n/).forEach(function (line) {
+        if (line.indexOf('FN:') === 0) {
+          var n = line.slice(3).trim().split(/\s+/, 2);
+          fn = n[0] || '';
+          ln = n[1] || '';
+        }
+        if (line.indexOf('N:') === 0 && !fn) {
+          var p = line.slice(2).split(';');
+          ln = (p[0] || '').trim();
+          fn = (p[1] || '').trim();
+        }
+        if (line.indexOf('TEL') >= 0) {
+          var t = line.split(':').pop();
+          if (t && !phone) phone = normalizePhoneLocal(t);
+        }
+        if (line.indexOf('EMAIL') >= 0 && !email) email = line.split(':').pop().trim();
+      });
+      if (fn || ln || phone) {
+        out.push({ firstName: fn, lastName: ln, phone: phone, email: email });
+      }
+    });
+    return out;
+  }
+
+  function downloadFile(name, content, mime) {
+    var blob = new Blob([content], { type: mime });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () {
+      URL.revokeObjectURL(url);
+    }, 4000);
+  }
+
+  function safeFileName(name) {
+    return String(name || 'contact')
+      .replace(/[\\/:*?"<>|]/g, '_')
+      .trim()
+      .slice(0, 48) || 'contact';
+  }
+
+  function detectPlatform() {
+    var ua = navigator.userAgent || '';
+    if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+      return 'ios';
+    }
+    if (/Android/i.test(ua)) return 'android';
+    return 'desktop';
+  }
+
+  function isStandaloneApp() {
+    return (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true
+    );
+  }
+
+  function loadAppConfig() {
+    var el = document.getElementById('app-config');
+    if (!el || !el.textContent) return null;
+    try {
+      return JSON.parse(el.textContent);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function shareOrDownloadVcard(vcf, fileName, contactName) {
+    var file = new File([vcf], fileName, { type: 'text/vcard;charset=utf-8' });
+    if (navigator.share) {
+      var withFile = { files: [file], title: contactName || 'איש קשר' };
+      if (navigator.canShare && navigator.canShare(withFile)) {
+        return navigator
+          .share(withFile)
+          .then(function () {
+            showToast('בחר «אנשי קשר» / Contacts לשמירה');
+          })
+          .catch(function (err) {
+            if (err && err.name === 'AbortError') return;
+            downloadFile(fileName, vcf, 'text/vcard;charset=utf-8');
+            showToast('נפתח קובץ – לחץ לייבוא לאנשי קשר');
+          });
+      }
+    }
+    downloadFile(fileName, vcf, 'text/vcard;charset=utf-8');
+    showToast('פתח את הקובץ ולחץ «הוסף» / «ייבא»');
+    return Promise.resolve();
+  }
+
+  function saveContactToDevice(contact) {
+    if (!contact) return Promise.resolve();
+    var vcf = toVcard([contact]);
+    var fileName = safeFileName(fullName(contact)) + '.vcf';
+    var name = fullName(contact) || 'איש קשר';
+
+    if (navigator.contacts && typeof navigator.contacts.save === 'function') {
+      return navigator.contacts
+        .save({
+          name: [name],
+          tel: contact.phone ? [contact.phone] : [],
+          email: contact.email ? [contact.email] : [],
+        })
+        .then(function () {
+          showToast('נשמר באנשי קשר!');
+          closeDialog(els.actionDialog);
+        })
+        .catch(function () {
+          return shareOrDownloadVcard(vcf, fileName, name);
+        });
+    }
+
+    return shareOrDownloadVcard(vcf, fileName, name).then(function () {
+      closeDialog(els.actionDialog);
+    });
+  }
+
+  function registerServiceWorker() {
+    var cfg = loadAppConfig();
+    if (!cfg || !cfg.swUrl || !('serviceWorker' in navigator)) return;
+    var opts;
+    if (cfg.scope && String(cfg.scope).indexOf('http') === 0) {
+      opts = { scope: cfg.scope };
+    }
+    navigator.serviceWorker
+      .getRegistrations()
+      .then(function (regs) {
+        return Promise.all(
+          regs.map(function (r) {
+            return r.unregister();
+          })
+        );
+      })
+      .catch(function () {})
+      .then(function () {
+        return navigator.serviceWorker.register(cfg.swUrl, opts);
+      })
+      .catch(function () {});
+  }
+
+  function applyStandaloneChrome_() {
+    if (!isStandaloneApp()) return;
+    document.documentElement.classList.add('pwa-standalone');
+    if (els.btnInstall) els.btnInstall.classList.add('hidden');
+  }
+
+  function showInstallSteps() {
+    var platform = detectPlatform();
+    if (els.installStepsIos) els.installStepsIos.classList.toggle('hidden', platform !== 'ios');
+    if (els.installStepsAndroid) els.installStepsAndroid.classList.toggle('hidden', platform !== 'android');
+    if (els.installStepsDesktop) els.installStepsDesktop.classList.toggle('hidden', platform !== 'desktop');
+    var canNative = !!deferredInstallPrompt;
+    if (els.btnInstallNative) els.btnInstallNative.classList.toggle('hidden', !canNative || platform !== 'android');
+    if (els.btnInstallNativeDesk) {
+      els.btnInstallNativeDesk.classList.toggle('hidden', !canNative || platform !== 'desktop');
+    }
+  }
+
+  function openInstallDialog() {
+    showInstallSteps();
+    openDialog(els.installDialog);
+  }
+
+  function runNativeInstall() {
+    if (!deferredInstallPrompt) {
+      openInstallDialog();
+      return;
+    }
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then(function () {
+      deferredInstallPrompt = null;
+      if (els.btnInstall) els.btnInstall.classList.add('hidden');
+      if (els.installDialog) closeDialog(els.installDialog);
+      showToast('האפליקציה הותקנה!');
+    });
+  }
+
+  function initInstallUi() {
+    registerServiceWorker();
+    applyStandaloneChrome_();
+    if (isStandaloneApp()) return;
+
+    var cfg = loadAppConfig();
+    if (
+      cfg &&
+      !cfg.pwaHost &&
+      cfg.pwaIconReady === false &&
+      typeof showToast === 'function'
+    ) {
+      showToast('להתקנה מלאה: הרץ setupPwaIconOnDrive ב-Apps Script');
+    }
+
+    if (els.btnInstall) els.btnInstall.classList.remove('hidden');
+
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      if (els.btnInstall) {
+        els.btnInstall.classList.remove('hidden');
+        els.btnInstall.classList.add('install-ready');
+      }
+      showInstallSteps();
+    });
+
+    window.addEventListener('appinstalled', function () {
+      deferredInstallPrompt = null;
+      if (els.btnInstall) els.btnInstall.classList.add('hidden');
+      showToast('האפליקציה הותקנה!');
+    });
+
+    try {
+      if (!localStorage.getItem(INSTALL_DISMISS_KEY)) {
+        setTimeout(function () {
+          if (!isStandaloneApp() && els.installDialog && !els.installDialog.open) {
+            openInstallDialog();
+            localStorage.setItem(INSTALL_DISMISS_KEY, '1');
+          }
+        }, 2500);
+      }
+    } catch (e) {}
+  }
+
+  function toVcard(list) {
+    var lines = [];
+    list.forEach(function (c) {
+      var n = fullName(c);
+      lines.push('BEGIN:VCARD');
+      lines.push('VERSION:3.0');
+      lines.push('FN:' + n);
+      lines.push('N:' + (c.lastName || '') + ';' + (c.firstName || '') + ';;;');
+      if (c.phone) lines.push('TEL;TYPE=CELL:' + c.phone);
+      if (c.email) lines.push('EMAIL:' + c.email);
+      lines.push('END:VCARD');
+    });
+    return lines.join('\n');
+  }
+
+  function toCsv(list) {
+    var rows = ['id,firstName,lastName,phone,email'];
+    list.forEach(function (c) {
+      rows.push([c.id || '', c.firstName || '', c.lastName || '', c.phone || '', c.email || ''].join(','));
+    });
+    return rows.join('\n');
+  }
+
+  function exportSelected() {
+    var list = getSelectedList();
+    if (!list.length) {
+      showToast('בחר לפחות איש קשר אחד');
+      return;
+    }
+    var vcf = toVcard(list);
+    if (navigator.share && navigator.canShare) {
+      var file = new File([vcf], 'contacts.vcf', { type: 'text/vcard' });
+      if (navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], title: 'אנשי קשר' }).catch(function () {
+          downloadFile('contacts.vcf', vcf, 'text/vcard');
+        });
+        return;
+      }
+    }
+    downloadFile('contacts-export.vcf', vcf, 'text/vcard');
+    showToast('יוצא ' + list.length + ' אנשי קשר');
+  }
+
+  function doImport(list) {
+    if (!list.length) {
+      showToast('לא נמצאו אנשי קשר בקובץ');
+      return;
+    }
+    showToast('מייבא ' + list.length + '...');
+    gasRun('importContactsPublic', state.adminToken, list)
+      .then(function (res) {
+        if (!res.ok) {
+          showToast(res.error || 'שגיאה');
+          return;
+        }
+        if (res.contacts && res.contacts.length) {
+          var merged = dedupeAndSort(state.contacts.concat(res.contacts));
+          saveCache(merged);
+          setState({ contacts: merged });
+        }
+        els.importDialog.close();
+        showToast('יובאו ' + (res.addedCount || 0) + ' אנשי קשר');
+        refreshFromServer();
+      })
+      .catch(function (err) {
+        showToast('שגיאה: ' + (err.message || err));
+      });
+  }
+
+  function refreshFromServer() {
+    setState({ syncing: true }, { render: false });
+    setSyncing(true);
+    gasRun('listContactsPublic')
+      .then(function (data) {
+        if (data.ok && data.contacts) {
+          var list = dedupeAndSort(data.contacts);
+          saveCache(list);
+          setState({ contacts: list });
+        }
+      })
+      .finally(function () {
+        setState({ syncing: false }, { render: false });
+        setSyncing(false);
+      });
+  }
+
+  function pickFromDevice() {
+    if (!navigator.contacts || !navigator.contacts.select) {
+      showToast('לא נתמך בדפדפן זה – בחר קובץ');
+      return;
+    }
+    navigator.contacts
+      .select(['name', 'tel', 'email'], { multiple: true })
+      .then(function (picked) {
+        var list = [];
+        picked.forEach(function (p) {
+          var name = (p.name && p.name[0]) || '';
+          var parts = name.trim().split(/\s+/, 2);
+          var tel = (p.tel && p.tel[0]) || '';
+          list.push({
+            firstName: parts[0] || '',
+            lastName: parts[1] || '',
+            phone: normalizePhoneLocal(tel),
+            email: (p.email && p.email[0]) || '',
+          });
+        });
+        doImport(dedupeAndSort(list.map(normalizeContact)));
+      })
+      .catch(function () {
+        showToast('בוטל או לא זמין');
+      });
+  }
+
+  function handleFile(file) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      var text = reader.result || '';
+      var name = (file.name || '').toLowerCase();
+      var list = name.indexOf('.vcf') >= 0 ? parseVcard(text) : parseCsv(text);
+      doImport(dedupeAndSort(list.map(normalizeContact)));
+    };
+    reader.readAsText(file);
+  }
+
+  function getStoredTheme() {
+    try {
+      var t = localStorage.getItem(THEME_KEY);
+      return t === 'dark' || t === 'light' ? t : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function getEffectiveTheme() {
+    var stored = getStoredTheme();
+    if (stored) return stored;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
+  }
+
+  function updateThemeMeta(theme) {
+    var meta = document.getElementById('meta-theme-color');
+    if (meta) meta.setAttribute('content', THEME_COLORS[theme] || THEME_COLORS.light);
+  }
+
+  function updateThemeToggleUi(theme) {
+    if (!els.btnTheme) return;
+    var isDark = theme === 'dark';
+    var label = isDark ? 'בהיר' : 'כהה';
+    els.btnTheme.classList.toggle('is-dark', isDark);
+    var themeLabel = document.getElementById('theme-label');
+    if (themeLabel) themeLabel.textContent = label;
+    els.btnTheme.setAttribute('aria-label', isDark ? 'עבור למצב בהיר' : 'עבור למצב כהה');
+    els.btnTheme.setAttribute('title', isDark ? 'מצב בהיר' : 'מצב כהה');
+  }
+
+  function applyTheme(mode, persist) {
+    var root = document.documentElement;
+    if (mode === 'dark' || mode === 'light') {
+      root.setAttribute('data-theme', mode);
+      if (persist) {
+        try {
+          localStorage.setItem(THEME_KEY, mode);
+        } catch (e) {}
+      }
+    } else {
+      root.removeAttribute('data-theme');
+      if (persist) {
+        try {
+          localStorage.removeItem(THEME_KEY);
+        } catch (e) {}
+      }
+    }
+    var effective = getEffectiveTheme();
+    updateThemeToggleUi(effective);
+    updateThemeMeta(effective);
+  }
+
+  function toggleTheme() {
+    var next = getEffectiveTheme() === 'dark' ? 'light' : 'dark';
+    applyTheme(next, true);
+  }
+
+  function initTheme() {
+    var stored = getStoredTheme();
+    if (stored) applyTheme(stored, false);
+    else updateThemeToggleUi(getEffectiveTheme());
+    updateThemeMeta(getEffectiveTheme());
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+        if (!getStoredTheme()) {
+          updateThemeToggleUi(getEffectiveTheme());
+          updateThemeMeta(getEffectiveTheme());
+        }
+      });
+    }
+  }
+
+  function loadBootstrap() {
+    var el = document.getElementById('contacts-bootstrap');
+    if (!el || !el.textContent) return null;
+    try {
+      var data = JSON.parse(el.textContent);
+      return Array.isArray(data) ? data : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function init() {
+    if (!els.list || !els.stats) {
+      if (els.stats) els.stats.textContent = 'שגיאה: עדכן Index.html';
+      return;
+    }
+
+    var token = loadToken();
+    setState(
+      {
+        adminToken: token,
+        skeleton: true,
+        syncing: true,
+      },
+      { render: false }
+    );
+    updateAdminUI();
+    installPwaHeadIcons_();
+    applyBrandLogo();
+    initTheme();
+    initInstallUi();
+    initScrollTop();
+
+    var boot = loadBootstrap();
+    if (boot && boot.length) {
+      var bootList = dedupeAndSort(boot);
+      setState({ contacts: bootList, skeleton: false }, { render: false });
+    } else {
+      var cached = loadCache();
+      if (cached && cached.length) {
+        setState({ contacts: cached, skeleton: false }, { render: false });
+      }
+    }
+    computeFilter();
+
+    gasRun('listContactsPublic')
+      .then(function (data) {
+        if (data.ok && data.contacts) {
+          var list = dedupeAndSort(data.contacts);
+          saveCache(list);
+          setState({ contacts: list });
+        }
+      })
+      .catch(function () {
+        if (!state.contacts.length) showToast('שגיאה בטעינה');
+      })
+      .then(function () {
+        setState({ syncing: false, skeleton: false }, { render: false });
+        setSyncing(false);
+        setSkeleton(false);
+        if (!state.contacts.length && !state.selectMode) els.stats.textContent = 'אין אנשי קשר';
+        computeFilter();
+      });
+  }
+
+  function bind(el, ev, fn) {
+    if (el) el.addEventListener(ev, fn);
+  }
+
+  bind(els.search, 'input', function () {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(applyFilter, SEARCH_DELAY);
+  });
+
+  bind(els.searchClear, 'click', function () {
+    els.search.value = '';
+    applyFilter();
+    els.search.focus();
+  });
+
+  bind(els.btnTheme, 'click', toggleTheme);
+
+  bind(els.btnRefresh, 'click', function () {
+    if (els.btnRefresh) els.btnRefresh.classList.add('spin-once');
+    setTimeout(function () {
+      if (els.btnRefresh) els.btnRefresh.classList.remove('spin-once');
+    }, 700);
+    refreshFromServer();
+    showToast('מרענן...');
+  });
+
+  bind(els.fabDedupe, 'click', function () {
+    requireAdmin(runDedupeSheet);
+  });
+
+  function initScrollTop() {
+    if (!els.btnScrollTop) return;
+    window.addEventListener(
+      'scroll',
+      function () {
+        var show = window.scrollY > 400;
+        els.btnScrollTop.classList.toggle('hidden', !show);
+      },
+      { passive: true }
+    );
+    els.btnScrollTop.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  bind(els.btnAdmin, 'click', function () {
+    if (isAdmin()) {
+      saveToken(null);
+      showToast('יצאת ממצב ניהול');
+    } else requireAdmin(function () {});
+  });
+
+  bind(els.fabMain, 'click', function () {
+    requireAdmin(function () {
+      els.fabMain.classList.toggle('admin-open');
+    });
+  });
+
+  bind(els.fabAdd, 'click', function () {
+    requireAdmin(openAdd);
+  });
+
+  bind(els.fabImport, 'click', function () {
+    requireAdmin(openImport);
+  });
+
+  bind(els.authCancel, 'click', function () {
+    closeDialog(els.authDialog);
+    setState({ pendingAction: null }, { render: false });
+  });
+
+  bind(els.authForm, 'submit', function (e) {
+    e.preventDefault();
+    var pw = String(new FormData(els.authForm).get('password') || '');
+    gasRun('verifyPasswordPublic', pw)
+      .then(function (res) {
+        if (!res.ok) {
+          showToast(res.error || 'סיסמה שגויה');
+          return;
+        }
+        saveToken(res.token);
+        closeDialog(els.authDialog);
+        showToast('מחובר – אפשר להוסיף ולייבא');
+        if (state.pendingAction) {
+          var fn = state.pendingAction;
+          setState({ pendingAction: null }, { render: false });
+          fn();
+        }
+      })
+      .catch(function (err) {
+        showToast('שגיאה: ' + (err.message || err));
+      });
+  });
+
+  bind(els.btnSelectMode, 'click', function () {
+    if (state.selectMode) exitSelectMode();
+    else enterSelectMode();
+  });
+
+  bind(els.btnSelectCancel, 'click', exitSelectMode);
+
+  bind(els.btnSelectAll, 'click', function () {
+    var allSelected = state.filtered.every(function (c) {
+      return state.selectedIds[contactKey(c)];
+    });
+    var next = Object.assign({}, state.selectedIds);
+    if (allSelected) {
+      state.filtered.forEach(function (c) {
+        delete next[contactKey(c)];
+      });
+    } else {
+      state.filtered.forEach(function (c) {
+        next[contactKey(c)] = c;
+      });
+    }
+    setState({ selectedIds: next }, { render: false });
+    updateSelectCount();
+    applyFilter();
+  });
+
+  bind(els.btnExport, 'click', exportSelected);
+
+  bind(els.addCancel, 'click', function () {
+    closeDialog(els.addDialog);
+  });
+  bind(els.actionClose, 'click', function () {
+    closeDialog(els.actionDialog);
+  });
+  bind(els.importClose, 'click', function () {
+    closeDialog(els.importDialog);
+  });
+
+  bind(els.addDialog, 'click', function (e) {
+    if (e.target === els.addDialog) closeDialog(els.addDialog);
+  });
+  bind(els.actionDialog, 'click', function (e) {
+    if (e.target === els.actionDialog) closeDialog(els.actionDialog);
+  });
+
+  var phoneInput = els.addForm.querySelector('input[name="phone"]');
+  if (phoneInput) {
+    phoneInput.addEventListener('input', function () {
+      phoneInput.value = formatPhoneInput(phoneInput.value);
+    });
+  }
+
+  bind(els.addForm, 'submit', function (e) {
+    e.preventDefault();
+    if (!isAdmin()) {
+      requireAdmin(function () {
+        els.addForm.dispatchEvent(new Event('submit'));
+      });
+      return;
+    }
+    var fd = new FormData(els.addForm);
+    var name = String(fd.get('name') || '').trim();
+    var phone = String(fd.get('phone') || '').trim();
+    var parts = name.split(/\s+/, 2);
+    if (!PHONE_REGEX.test(phone)) {
+      showToast('פורמט: 058-1234567 או 02-1234567 או +972-5X-XXXXXXX');
+      return;
+    }
+    var contact = {
+      firstName: parts[0] || '',
+      lastName: parts[1] || '',
+      phone: phone,
+      email: String(fd.get('email') || '').trim(),
+    };
+    els.addSubmit.disabled = true;
+    els.btnText.classList.add('hidden');
+    els.btnSpinner.classList.remove('hidden');
+    gasRun('addContactPublic', state.adminToken, contact)
+      .then(function (res) {
+        if (!res.ok) {
+          showToast(res.error || 'שגיאה');
+          if (res.error && res.error.indexOf('סיסמה') >= 0) saveToken(null);
+          return;
+        }
+        var merged = dedupeAndSort(state.contacts.concat([res.contact]));
+        saveCache(merged);
+        setState({ contacts: merged });
+        closeDialog(els.addDialog);
+        showToast('נשמר בגיליון!');
+        saveContactToDevice(res.contact);
+      })
+      .catch(function (err) {
+        showToast('שגיאה: ' + (err.message || err));
+      })
+      .then(function () {
+        els.addSubmit.disabled = false;
+        els.btnText.classList.remove('hidden');
+        els.btnSpinner.classList.add('hidden');
+      });
+  });
+
+  bind(els.importFile, 'change', function () {
+    if (els.importFile.files && els.importFile.files[0]) handleFile(els.importFile.files[0]);
+    els.importFile.value = '';
+  });
+
+  bind(els.btnPickDevice, 'click', pickFromDevice);
+
+  bind(els.btnCall, 'click', function () {
+    var c = state.selectedContact;
+    if (c && c.phone) window.open('tel:' + c.phone, '_top');
+    closeDialog(els.actionDialog);
+  });
+  bind(els.btnWhatsapp, 'click', function () {
+    var c = state.selectedContact;
+    if (c && c.phone) window.open('https://wa.me/' + normalizePhone(c.phone), '_blank');
+    closeDialog(els.actionDialog);
+  });
+  bind(els.btnCopy, 'click', function () {
+    var c = state.selectedContact;
+    if (!c || !c.phone) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(c.phone).then(function () {
+        showToast('הועתק ללוח!');
+      });
+    } else showToast(c.phone);
+    closeDialog(els.actionDialog);
+  });
+
+  bind(els.btnSaveDevice, 'click', function () {
+    if (!state.selectedContact) return;
+    saveContactToDevice(state.selectedContact);
+  });
+
+  bind(els.btnInstall, 'click', function () {
+    if (deferredInstallPrompt) runNativeInstall();
+    else openInstallDialog();
+  });
+
+  bind(els.installClose, 'click', function () {
+    closeDialog(els.installDialog);
+  });
+
+  bind(els.btnInstallNative, 'click', runNativeInstall);
+  bind(els.btnInstallNativeDesk, 'click', runNativeInstall);
+
+  bind(els.installDialog, 'click', function (e) {
+    if (e.target === els.installDialog) closeDialog(els.installDialog);
+  });
+
+  try {
+    init();
+  } catch (err) {
+    if (els.stats) els.stats.textContent = 'שגיאה: ' + (err.message || err);
+  }
+})();

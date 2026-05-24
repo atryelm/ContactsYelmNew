@@ -1,0 +1,3508 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0f1d42" id="meta-theme-color" />
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme_v1');
+          if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="אנשי קשר" />
+    <meta name="application-name" content="אנשי קשר" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <!-- אייקון מסך הבית: ב-Apps Script רק setFaviconUrl() ב-Code.gs (הקישורים כאן לא משמשים Chrome) -->
+    <link rel="icon" type="image/png" sizes="192x192" href="<?= getPublicPwaIconUrl_(192) ?>" />
+    <link rel="shortcut icon" type="image/png" href="<?= getPublicPwaIconUrl_(192) ?>" />
+    <link rel="apple-touch-icon" href="<?= getPublicPwaIconUrl_(192) ?>" />
+    <link rel="apple-touch-icon" sizes="180x180" href="<?= getPublicPwaIconUrl_(180) ?>" />
+    <link rel="apple-touch-icon" sizes="192x192" href="<?= getPublicPwaIconUrl_(192) ?>" />
+    <link rel="apple-touch-icon" sizes="512x512" href="<?= getPublicPwaIconUrl_(512) ?>" />
+    <meta property="og:image" content="<?= getPublicPwaIconUrl_(192) ?>" />
+    <meta name="twitter:image" content="<?= getPublicPwaIconUrl_(192) ?>" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <script type="application/json" id="brand-logo-bootstrap">{}</script>
+    <title>אנשי קשר - ישיבת אלון מורה</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>:root {
+  --bg: #e4f0ed;
+  --text: #0a2e28;
+  --muted: #4a6560;
+  --text-on-hero: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #e8f3f0;
+  --surface-elevated: rgba(255, 255, 255, 0.97);
+  --card: rgba(255, 255, 255, 0.92);
+  --card-border: rgba(0, 77, 64, 0.14);
+  --card-border-hover: rgba(0, 121, 107, 0.35);
+  --card-shadow: 0 10px 40px rgba(0, 77, 64, 0.12), 0 2px 8px rgba(0, 0, 0, 0.05);
+  --hero: linear-gradient(145deg, #004d40 0%, #00695c 45%, #00897b 100%);
+  --hero-input-bg: #ffffff;
+  --hero-input-text: #0a2e28;
+  --hero-placeholder: rgba(10, 46, 40, 0.55);
+  --hero-clear-bg: rgba(0, 77, 64, 0.12);
+  --hero-clear-text: #0a2e28;
+  --hero-chip-bg: rgba(255, 255, 255, 0.16);
+  --hero-chip-text: #ffffff;
+  --hero-chip-border: rgba(255, 255, 255, 0.38);
+  --hero-chip-active-bg: #ffffff;
+  --hero-chip-active-text: #004d40;
+  --hero-tool-bg: rgba(255, 255, 255, 0.2);
+  --hero-tool-bg-hover: rgba(255, 255, 255, 0.3);
+  --hero-sync-bg: rgba(255, 255, 255, 0.16);
+  --input-bg: #ffffff;
+  --input-border: #b8cdc7;
+  --input-text: #0a2e28;
+  --accent: #00796b;
+  --accent-dark: #004d40;
+  --accent-soft: rgba(0, 121, 107, 0.1);
+  --accent-contrast: #ffffff;
+  --mark-bg: #ffd54f;
+  --mark-text: #1a1a1a;
+  --selected-bg: #d4efe9;
+  --selected-outline: #00796b;
+  --section-header-bg: rgba(0, 77, 64, 0.09);
+  --section-header-text: #004d40;
+  --letter-nav-bg: rgba(255, 255, 255, 0.94);
+  --letter-nav-text: #004d40;
+  --letter-nav-hover: rgba(0, 121, 107, 0.14);
+  --footer-bg: rgba(255, 255, 255, 0.94);
+  --footer-border: rgba(0, 77, 64, 0.1);
+  --overlay: rgba(0, 35, 30, 0.55);
+  --handle-bg: #b0bec5;
+  --ghost-bg: #e8f3f0;
+  --ghost-text: #0a2e28;
+  --toast-bg: #0a2e28;
+  --toast-fg: #ffffff;
+  --tile-call-bg: linear-gradient(145deg, #d4ebe8, #a8d4cc);
+  --tile-wa-bg: linear-gradient(145deg, #dcf5e6, #b8e8c8);
+  --tile-copy-bg: linear-gradient(145deg, #e8f0ee, #cdded8);
+  --tile-save-bg: linear-gradient(145deg, #dce8f5, #b8d4ef);
+  --skeleton: linear-gradient(90deg, #d0e6e0 25%, #eaf5f2 50%, #d0e6e0 75%);
+  --wa: #25d366;
+  --shadow: 0 8px 32px rgba(0, 77, 64, 0.12);
+  --radius: 20px;
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-t: env(safe-area-inset-top, 0px);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: light dark;
+}
+
+html[data-theme='light'] {
+  color-scheme: light;
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+/* כפיית מצב בהיר כשהמשתמש בוחר בהיר (גם אם המערכת בכהה) */
+html[data-theme='light'] {
+  --bg: #e4f0ed;
+  --text: #0a2e28;
+  --muted: #4a6560;
+  --surface: #ffffff;
+  --surface-2: #e8f3f0;
+  --surface-elevated: rgba(255, 255, 255, 0.97);
+  --card: rgba(255, 255, 255, 0.92);
+  --card-border: rgba(0, 77, 64, 0.14);
+  --card-border-hover: rgba(0, 121, 107, 0.35);
+  --card-shadow: 0 10px 40px rgba(0, 77, 64, 0.12), 0 2px 8px rgba(0, 0, 0, 0.05);
+  --hero-input-bg: #ffffff;
+  --hero-input-text: #0a2e28;
+  --hero-placeholder: rgba(10, 46, 40, 0.55);
+  --hero-clear-bg: rgba(0, 77, 64, 0.12);
+  --hero-clear-text: #0a2e28;
+  --input-bg: #ffffff;
+  --input-border: #b8cdc7;
+  --input-text: #0a2e28;
+  --accent: #00796b;
+  --accent-dark: #004d40;
+  --accent-soft: rgba(0, 121, 107, 0.1);
+  --mark-bg: #ffd54f;
+  --mark-text: #1a1a1a;
+  --selected-bg: #d4efe9;
+  --section-header-bg: rgba(0, 77, 64, 0.09);
+  --section-header-text: #004d40;
+  --letter-nav-bg: rgba(255, 255, 255, 0.94);
+  --letter-nav-text: #004d40;
+  --letter-nav-hover: rgba(0, 121, 107, 0.14);
+  --footer-bg: rgba(255, 255, 255, 0.94);
+  --footer-border: rgba(0, 77, 64, 0.1);
+  --overlay: rgba(0, 35, 30, 0.55);
+  --handle-bg: #b0bec5;
+  --ghost-bg: #e8f3f0;
+  --ghost-text: #0a2e28;
+  --toast-bg: #0a2e28;
+  --toast-fg: #ffffff;
+  --tile-call-bg: linear-gradient(145deg, #d4ebe8, #a8d4cc);
+  --tile-wa-bg: linear-gradient(145deg, #dcf5e6, #b8e8c8);
+  --tile-copy-bg: linear-gradient(145deg, #e8f0ee, #cdded8);
+  --tile-save-bg: linear-gradient(145deg, #dce8f5, #b8d4ef);
+  --skeleton: linear-gradient(90deg, #d0e6e0 25%, #eaf5f2 50%, #d0e6e0 75%);
+  --shadow: 0 8px 32px rgba(0, 77, 64, 0.12);
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: 'Heebo', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+  transition: background 0.35s ease, color 0.35s ease;
+}
+
+.bg-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 168, 150, 0.25), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(0, 77, 64, 0.08), transparent);
+  z-index: 0;
+}
+
+#app {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: calc(72px + var(--safe-b));
+}
+
+@media (display-mode: standalone) {
+  html.pwa-standalone .hero {
+    padding-top: calc(1rem + var(--safe-t));
+  }
+
+  html.pwa-standalone body {
+    overscroll-behavior-y: contain;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html.pwa-standalone #app {
+    min-height: 100dvh;
+  }
+}
+
+.hero {
+  background: var(--hero);
+  color: var(--text-on-hero);
+  padding: calc(12px + var(--safe-t)) 18px 20px;
+  border-radius: 0 0 28px 28px;
+  box-shadow: var(--shadow);
+}
+
+.hero-top {
+  margin-bottom: 0;
+}
+
+.hero-toolbar {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  margin: 12px 0 10px;
+}
+
+@media (max-width: 420px) {
+  .hero-toolbar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.tool-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 58px;
+  min-width: 0;
+  padding: 8px 4px;
+  border: none;
+  border-radius: 12px;
+  background: var(--hero-tool-bg);
+  color: var(--text-on-hero);
+  font: inherit;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tool-btn:hover {
+  background: var(--hero-tool-bg-hover);
+}
+
+.tool-btn:active {
+  transform: scale(0.96);
+}
+
+.tool-btn .tool-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.tool-btn .tool-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.15;
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tool-btn.active {
+  background: rgba(255, 255, 255, 0.32);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.45);
+}
+
+.tool-btn.unlocked {
+  background: rgba(128, 222, 234, 0.28);
+}
+
+.tool-btn-theme .ico-moon {
+  display: none;
+}
+
+.tool-btn-theme.is-dark .ico-sun {
+  display: none;
+}
+
+.tool-btn-theme.is-dark .ico-moon {
+  display: block;
+}
+
+#btn-admin .ico-unlock {
+  display: none;
+}
+
+#btn-admin.unlocked .ico-lock {
+  display: none;
+}
+
+#btn-admin.unlocked .ico-unlock {
+  display: block;
+}
+
+.tool-btn.spin-once .tool-icon {
+  animation: spinOnce 0.6s ease;
+}
+
+.sync-status {
+  margin-bottom: 10px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-logo {
+  display: block;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28), 0 0 0 2px rgba(255, 255, 255, 0.2);
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.brand-label {
+  margin: 0;
+  font-size: 0.75rem;
+  opacity: 0.85;
+  font-weight: 500;
+}
+
+.brand h1 {
+  margin: 2px 0 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.sync-status,
+.sync-badge {
+  padding: 8px 12px;
+  background: var(--hero-sync-bg);
+  color: var(--text-on-hero);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sync-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #80deea;
+  animation: pulse 1s ease infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.85);
+  }
+}
+
+.filter-chips {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.filter-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  flex-shrink: 0;
+  border: 1px solid var(--hero-chip-border);
+  background: var(--hero-chip-bg);
+  color: var(--hero-chip-text);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.chip.active {
+  background: var(--hero-chip-active-bg);
+  color: var(--hero-chip-active-text);
+  border-color: var(--hero-chip-active-bg);
+}
+
+.chip:active {
+  transform: scale(0.96);
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-ico {
+  position: absolute;
+  right: 14px;
+  font-size: 1rem;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+#search {
+  width: 100%;
+  border: 2px solid transparent;
+  border-radius: 16px;
+  padding: 14px 44px 14px 40px;
+  font: inherit;
+  font-size: 16px;
+  background: var(--hero-input-bg);
+  color: var(--hero-input-text);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.25s ease, transform 0.2s ease, background 0.25s ease, color 0.25s ease;
+}
+
+#search::placeholder {
+  color: var(--hero-placeholder);
+  opacity: 1;
+}
+
+#search:focus {
+  outline: none;
+  box-shadow: 0 6px 28px rgba(0, 168, 150, 0.35);
+  transform: translateY(-1px);
+}
+
+.search-clear {
+  position: absolute;
+  left: 8px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: var(--hero-clear-bg);
+  color: var(--hero-clear-text);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.stats {
+  margin: 10px 4px 0;
+  font-size: 0.8rem;
+  color: var(--text-on-hero);
+  opacity: 0.92;
+}
+
+.main {
+  flex: 1;
+  padding: 12px 14px 8px;
+  overflow: visible;
+  min-height: 200px;
+}
+
+#contact-list {
+  display: flex !important;
+}
+
+.contact-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.list-section-header {
+  list-style: none;
+  margin: 8px 0 4px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--section-header-text);
+  letter-spacing: 0.04em;
+  background: var(--section-header-bg);
+  border-radius: 10px;
+  width: fit-content;
+}
+
+.contact-name mark,
+.contact-phone mark {
+  background: var(--mark-bg);
+  color: var(--mark-text);
+  border-radius: 4px;
+  padding: 0 2px;
+}
+
+.letter-nav {
+  position: fixed;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 6px 4px;
+  background: var(--letter-nav-bg);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(8px);
+}
+
+.letter-nav button {
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--letter-nav-text);
+  padding: 2px 4px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.letter-nav button:hover,
+.letter-nav button:focus {
+  background: var(--letter-nav-hover);
+}
+
+.scroll-top {
+  position: fixed;
+  inset-inline-end: 16px;
+  inset-inline-start: auto;
+  bottom: calc(52px + var(--safe-b));
+  z-index: 40;
+  width: 48px;
+  min-height: 48px;
+  padding: 6px 4px;
+  border: none;
+  border-radius: 14px;
+  background: var(--hero);
+  color: var(--text-on-hero);
+  font-size: 1rem;
+  font-weight: 700;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.scroll-top-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.scroll-top:active {
+  transform: scale(0.92);
+}
+
+.tool-btn.spin-once .tool-icon {
+  animation: spinOnce 0.6s ease;
+}
+
+@keyframes spinOnce {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.contact-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  background: var(--card);
+  backdrop-filter: blur(18px) saturate(1.35);
+  -webkit-backdrop-filter: blur(18px) saturate(1.35);
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+  text-align: right;
+  font: inherit;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+  transform: translateY(0) scale(1);
+  transition:
+    transform 0.22s var(--ease-spring),
+    box-shadow 0.25s var(--ease-out),
+    border-color 0.2s ease;
+}
+
+.contact-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--rx, 50%) var(--ry, 50%), rgba(0, 168, 150, 0.18), transparent 55%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.contact-card:hover {
+  box-shadow: 0 14px 48px rgba(0, 77, 64, 0.18), 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: var(--card-border-hover);
+}
+
+.contact-card:active {
+  transform: scale(0.97);
+}
+
+.contact-card:active::after {
+  opacity: 1;
+}
+
+.virtual-slot {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.virtual-slot--header,
+.list-section-header {
+  scroll-margin-top: 8px;
+}
+
+.virtual-slot--header .list-section-header {
+  width: 100%;
+}
+
+.virtual-slot.stagger-in {
+  animation: cardStaggerIn 0.42s var(--ease-out) both;
+}
+
+@keyframes cardStaggerIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.avatar {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  color: var(--accent-contrast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.contact-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.contact-name {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.contact-email {
+  margin: 2px 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.contact-phone {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+  direction: ltr;
+  text-align: right;
+}
+
+.contact-chevron {
+  color: var(--muted);
+  opacity: 0.7;
+  font-size: 1.2rem;
+}
+
+.skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sk-card {
+  height: 80px;
+  border-radius: var(--radius);
+  background: var(--skeleton);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s ease infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--muted);
+  animation: fadeIn 0.4s ease;
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fab {
+  position: fixed;
+  bottom: calc(52px + var(--safe-b));
+  inset-inline-start: 20px;
+  inset-inline-end: auto;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 18px 0 14px;
+  height: 56px;
+  max-width: calc(100vw - 40px);
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #00897b, #004d40);
+  color: var(--accent-contrast);
+  font: inherit;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 8px 28px rgba(0, 77, 64, 0.4);
+  cursor: pointer;
+  animation: fabPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fab:active {
+  transform: scale(0.94);
+}
+
+@keyframes fabPop {
+  from {
+    opacity: 0;
+    transform: scale(0.5) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.fab-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  text-align: center;
+  padding: 10px;
+  padding-bottom: calc(10px + var(--safe-b));
+  background: var(--footer-bg);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--footer-border);
+}
+
+.footer a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.7rem;
+}
+
+.sheet {
+  border: none;
+  border-radius: 24px 24px 0 0;
+  padding: 0 20px calc(24px + var(--safe-b));
+  margin: auto 0 0;
+  max-width: 100%;
+  width: 100%;
+  max-height: 92dvh;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.2);
+  animation: sheetUp 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.sheet[open] {
+  display: block;
+}
+
+@keyframes sheetUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.sheet::backdrop {
+  background: var(--overlay);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.25s ease;
+}
+
+.sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--handle-bg);
+  border-radius: 4px;
+  margin: 12px auto 16px;
+}
+
+.sheet-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.sheet-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  color: var(--accent-contrast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.4rem;
+}
+
+.sheet-head h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--text);
+}
+
+.sheet-sub {
+  margin: 4px 0 0;
+  color: var(--muted);
+  direction: ltr;
+  text-align: right;
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.action-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 8px;
+  border: none;
+  border-radius: 16px;
+  font: inherit;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.action-tile span {
+  font-size: 1.6rem;
+}
+
+.action-tile small {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.action-tile:active {
+  transform: scale(0.95);
+}
+
+.action-tile.call {
+  background: var(--tile-call-bg);
+}
+
+.action-tile.wa {
+  background: var(--tile-wa-bg);
+}
+
+.action-tile.copy {
+  background: var(--tile-copy-bg);
+}
+
+.action-tile.save {
+  background: var(--tile-save-bg);
+}
+
+.install-steps {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  background: var(--accent-soft);
+  color: var(--text);
+  border-radius: 14px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.install-steps ol {
+  margin: 8px 0 0;
+  padding-right: 20px;
+}
+
+.install-steps p {
+  margin: 0;
+}
+
+.tool-btn.install-ready {
+  animation: pulseInstall 2s ease infinite;
+}
+
+@keyframes pulseInstall {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0);
+  }
+}
+
+.sheet-form h2 {
+  margin: 0 0 4px;
+  font-size: 1.3rem;
+  color: var(--text);
+}
+
+.sheet-hint {
+  margin: 0 0 16px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.field span {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.field input {
+  border: 2px solid var(--input-border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  font: inherit;
+  font-size: 16px;
+  background: var(--input-bg);
+  color: var(--input-text);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(0, 168, 150, 0.15);
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.sheet-btn {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.2s ease;
+}
+
+.sheet-btn:active {
+  transform: scale(0.98);
+}
+
+.sheet-btn.primary {
+  background: linear-gradient(135deg, #00a896, #00695c);
+  color: var(--accent-contrast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.sheet-btn.primary:disabled {
+  opacity: 0.65;
+}
+
+.sheet-btn.ghost {
+  background: var(--ghost-bg);
+  color: var(--ghost-text);
+}
+
+.btn-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.toast {
+  position: fixed;
+  bottom: calc(120px + var(--safe-b));
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  opacity: 0;
+  background: var(--toast-bg);
+  color: var(--toast-fg);
+  padding: 12px 22px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 100;
+  pointer-events: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.hidden {
+  display: none !important;
+}
+
+
+.fab-wrap {
+  position: fixed;
+  bottom: calc(128px + var(--safe-b));
+  inset-inline-start: 20px;
+  inset-inline-end: auto;
+  z-index: 49;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: min(280px, calc(100vw - 100px));
+  animation: fadeIn 0.25s ease;
+}
+
+.fab-label {
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.fab-mini {
+  border: none;
+  border-radius: 14px;
+  padding: 12px 16px;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  text-align: right;
+  border: 1px solid var(--card-border);
+}
+
+.fab-mini.secondary {
+  background: var(--surface-2);
+}
+
+.fab-mini:active {
+  transform: scale(0.97);
+}
+
+#fab-main.admin-open {
+  transform: rotate(45deg);
+}
+
+.select-bar {
+  position: fixed;
+  bottom: calc(52px + var(--safe-b));
+  left: 12px;
+  right: 12px;
+  z-index: 55;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--surface-elevated);
+  color: var(--text);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow);
+  animation: sheetUp 0.3s ease;
+}
+
+.select-count-text,
+#select-count {
+  flex: 1 1 100%;
+  font-size: 0.85rem;
+  font-weight: 600;
+  min-width: 0;
+  color: var(--text);
+}
+
+.select-bar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1 1 auto;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+@media (min-width: 380px) {
+  .select-count-text,
+  #select-count {
+    flex: 1 1 auto;
+  }
+}
+
+.bar-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.bar-btn.primary {
+  background: linear-gradient(135deg, #00a896, #00695c);
+  color: var(--accent-contrast);
+}
+
+.bar-btn.ghost {
+  background: transparent;
+  color: var(--muted);
+}
+
+.contact-card.select-mode {
+  padding-left: 8px;
+}
+
+.card-check {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+}
+
+.contact-card.selected {
+  outline: 2px solid var(--selected-outline);
+  background: var(--selected-bg);
+}
+
+.import-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.block {
+  width: 100%;
+  display: block;
+  text-align: center;
+}
+
+.file-btn {
+  display: block;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  border: 1px solid var(--card-border);
+}
+
+.file-btn input {
+  display: none;
+}
+
+#app.selecting .fab,
+#app.selecting .fab-wrap {
+  display: none !important;
+}
+
+@media (min-width: 600px) {
+  #app {
+    max-width: 440px;
+    margin: 0 auto;
+  }
+
+  .sheet {
+    border-radius: 24px;
+    margin: auto;
+    max-width: 420px;
+  }
+}
+
+body.scroll-lock {
+  overflow: hidden;
+  touch-action: none;
+}
+
+.sheet {
+  transition:
+    transform 0.38s var(--ease-spring),
+    opacity 0.28s var(--ease-out);
+}
+
+.sheet[open].dialog-open {
+  animation: sheetUp 0.42s var(--ease-spring);
+}
+
+@keyframes sheetUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.toast {
+  transition:
+    transform 0.4s var(--ease-spring),
+    opacity 0.3s var(--ease-out);
+}
+
+.fab {
+  transition: transform 0.3s var(--ease-spring), box-shadow 0.25s ease;
+}
+
+.fab:active {
+  transform: scale(0.92);
+}
+
+.fab-wrap .fab-mini {
+  transition: transform 0.25s var(--ease-spring), opacity 0.2s ease;
+}
+
+.tool-btn,
+.chip,
+.bar-btn,
+.sheet-btn,
+.action-tile {
+  transition: transform 0.2s var(--ease-spring), background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tool-btn:active,
+.chip:active,
+.bar-btn:active,
+.sheet-btn:active {
+  transform: scale(0.94);
+}
+
+html[data-theme='dark'] {
+  --bg: #0b1412;
+  --text: #e6f2ef;
+  --muted: #9eb5af;
+  --surface: #162822;
+  --surface-2: #1c3029;
+  --surface-elevated: #1a2e28;
+  --card: #1a2e28;
+  --card-border: rgba(255, 255, 255, 0.12);
+  --card-border-hover: rgba(77, 212, 196, 0.4);
+  --card-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --hero: linear-gradient(145deg, #002820 0%, #004d40 50%, #00695c 100%);
+  --hero-input-bg: rgba(8, 22, 19, 0.88);
+  --hero-input-text: #e6f2ef;
+  --hero-placeholder: rgba(230, 242, 239, 0.5);
+  --hero-clear-bg: rgba(255, 255, 255, 0.14);
+  --hero-clear-text: #e6f2ef;
+  --hero-chip-bg: rgba(255, 255, 255, 0.12);
+  --hero-chip-text: #e6f2ef;
+  --hero-chip-border: rgba(255, 255, 255, 0.28);
+  --hero-chip-active-bg: #e6f2ef;
+  --hero-chip-active-text: #004d40;
+  --hero-tool-bg: rgba(255, 255, 255, 0.14);
+  --hero-tool-bg-hover: rgba(255, 255, 255, 0.22);
+  --hero-sync-bg: rgba(255, 255, 255, 0.12);
+  --input-bg: #0f1f1c;
+  --input-border: #3d524c;
+  --input-text: #e6f2ef;
+  --accent: #4dd4c4;
+  --accent-dark: #7ee8dc;
+  --accent-soft: rgba(77, 212, 196, 0.14);
+  --mark-bg: #ffc107;
+  --mark-text: #1a1a1a;
+  --selected-bg: rgba(77, 212, 196, 0.18);
+  --selected-outline: #4dd4c4;
+  --section-header-bg: rgba(255, 255, 255, 0.08);
+  --section-header-text: #7ee8dc;
+  --letter-nav-bg: #1a2e28;
+  --letter-nav-text: #7ee8dc;
+  --letter-nav-hover: rgba(77, 212, 196, 0.18);
+  --footer-bg: rgba(11, 20, 18, 0.96);
+  --footer-border: rgba(255, 255, 255, 0.08);
+  --overlay: rgba(0, 0, 0, 0.65);
+  --handle-bg: #4a6059;
+  --ghost-bg: #243d38;
+  --ghost-text: #e6f2ef;
+  --toast-bg: #e6f2ef;
+  --toast-fg: #0b1412;
+  --tile-call-bg: linear-gradient(145deg, #1e3d38, #122822);
+  --tile-wa-bg: linear-gradient(145deg, #1a3528, #0f2418);
+  --tile-copy-bg: linear-gradient(145deg, #1c2e2a, #121f1c);
+  --tile-save-bg: linear-gradient(145deg, #1a2a38, #0f1a24);
+  --skeleton: linear-gradient(90deg, #1a302b 25%, #243d38 50%, #1a302b 75%);
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme='light']) {
+    --bg: #0b1412;
+    --text: #e6f2ef;
+    --muted: #9eb5af;
+    --surface: #162822;
+    --surface-2: #1c3029;
+    --surface-elevated: #1a2e28;
+    --card: #1a2e28;
+    --card-border: rgba(255, 255, 255, 0.12);
+    --card-border-hover: rgba(77, 212, 196, 0.4);
+    --card-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.06);
+    --hero: linear-gradient(145deg, #002820 0%, #004d40 50%, #00695c 100%);
+    --hero-input-bg: rgba(8, 22, 19, 0.88);
+    --hero-input-text: #e6f2ef;
+    --hero-placeholder: rgba(230, 242, 239, 0.5);
+    --hero-clear-bg: rgba(255, 255, 255, 0.14);
+    --hero-clear-text: #e6f2ef;
+    --hero-chip-bg: rgba(255, 255, 255, 0.12);
+    --hero-chip-text: #e6f2ef;
+    --hero-chip-border: rgba(255, 255, 255, 0.28);
+    --hero-chip-active-bg: #e6f2ef;
+    --hero-chip-active-text: #004d40;
+    --hero-tool-bg: rgba(255, 255, 255, 0.14);
+    --hero-tool-bg-hover: rgba(255, 255, 255, 0.22);
+    --hero-sync-bg: rgba(255, 255, 255, 0.12);
+    --input-bg: #0f1f1c;
+    --input-border: #3d524c;
+    --input-text: #e6f2ef;
+    --accent: #4dd4c4;
+    --accent-dark: #7ee8dc;
+    --accent-soft: rgba(77, 212, 196, 0.14);
+    --mark-bg: #ffc107;
+    --mark-text: #1a1a1a;
+    --selected-bg: rgba(77, 212, 196, 0.18);
+    --selected-outline: #4dd4c4;
+    --section-header-bg: rgba(255, 255, 255, 0.08);
+    --section-header-text: #7ee8dc;
+    --letter-nav-bg: #1a2e28;
+    --letter-nav-text: #7ee8dc;
+    --letter-nav-hover: rgba(77, 212, 196, 0.18);
+    --footer-bg: rgba(11, 20, 18, 0.96);
+    --footer-border: rgba(255, 255, 255, 0.08);
+    --overlay: rgba(0, 0, 0, 0.65);
+    --handle-bg: #4a6059;
+    --ghost-bg: #243d38;
+    --ghost-text: #e6f2ef;
+    --toast-bg: #e6f2ef;
+    --toast-fg: #0b1412;
+    --tile-call-bg: linear-gradient(145deg, #1e3d38, #122822);
+    --tile-wa-bg: linear-gradient(145deg, #1a3528, #0f2418);
+    --tile-copy-bg: linear-gradient(145deg, #1c2e2a, #121f1c);
+    --tile-save-bg: linear-gradient(145deg, #1a2a38, #0f1a24);
+    --skeleton: linear-gradient(90deg, #1a302b 25%, #243d38 50%, #1a302b 75%);
+    --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+}
+
+html[data-theme='dark'] .bg-glow {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 168, 150, 0.1), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(0, 0, 0, 0.45), transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme='light']) .bg-glow {
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 168, 150, 0.1), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 100%, rgba(0, 0, 0, 0.45), transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+  </head>
+  <body>
+    <div class="bg-glow" aria-hidden="true"></div>
+    <div id="app">
+      <header class="hero">
+        <div class="hero-top">
+          <div class="brand">
+            <!-- contacts-app-v17 – לוגו מ-brand-logo-bootstrap בלבד (לא data URI ב-HTML) -->
+            <img
+              class="brand-logo"
+              id="brand-logo"
+              alt=""
+              width="56"
+              height="56"
+              decoding="async"
+              data-logo-v="17"
+              onerror="if(window.__logoFallback)window.__logoFallback(this)"
+            />
+            <script>
+              (function () {
+                var b = document.getElementById('brand-logo-bootstrap');
+                var img = document.getElementById('brand-logo');
+                if (!b || !img || img.dataset.logoLoaded) return;
+                try {
+                  var d = JSON.parse(b.textContent);
+                  function setData() {
+                    var src =
+                      d.type === 'dataUri'
+                        ? d.src
+                        : d.type === 'base64' && d.parts
+                          ? 'data:image/png;base64,' + d.parts.join('')
+                          : '';
+                    if (src) {
+                      img.src = src;
+                      img.dataset.logoLoaded = '1';
+                      img.removeAttribute('alt');
+                      return true;
+                    }
+                    return false;
+                  }
+                  if (!setData() && d.iconUrl) {
+                    img.src = d.iconUrl;
+                    img.dataset.logoLoaded = '1';
+                    img.removeAttribute('alt');
+                  }
+                } catch (e) {}
+              })();
+            </script>
+            <div>
+              <p class="brand-label">ישיבת אלון מורה</p>
+              <h1>אנשי קשר</h1>
+            </div>
+          </div>
+        </div>
+        <div class="hero-toolbar" role="toolbar" aria-label="פעולות ראשיות">
+          <button type="button" id="btn-theme" class="tool-btn tool-btn-theme" aria-label="מצב כהה" title="מצב כהה">
+            <span class="tool-icon" aria-hidden="true">
+              <svg class="ico-sun" viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="12" r="4" fill="currentColor"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              <svg class="ico-moon" viewBox="0 0 24 24" width="22" height="22"><path d="M21 14.5A8.5 8.5 0 1110.5 4 7 7 0 0021 14.5z" fill="currentColor"/></svg>
+            </span>
+            <span class="tool-label" id="theme-label">כהה</span>
+          </button>
+          <button type="button" id="btn-refresh" class="tool-btn" title="רענון רשימה" aria-label="רענון רשימה">
+            <span class="tool-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M17.65 6.35A7.95 7.95 0 0012 4V1L7 6l5 5V7c2.76 0 5 2.24 5 5 0 1.07-.34 2.07-.91 2.89l1.46 1.46A7.94 7.94 0 0020 12c0-2.21-.9-4.21-2.35-5.65zM6.35 17.65A7.95 7.95 0 0012 20v3l5-5-5-5v3c-2.76 0-5-2.24-5-5 0-1.07.34-2.07.91-2.89L6.45 8.7A7.94 7.94 0 004 12c0 2.21.9 4.21 2.35 5.65z"/></svg>
+            </span>
+            <span class="tool-label">רענון</span>
+          </button>
+          <button type="button" id="btn-install" class="tool-btn hidden" title="התקנת האפליקציה" aria-label="התקנת האפליקציה">
+            <span class="tool-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M5 20h14v-2H5v2zm7-18L5.33 9h3.67v4h6V9h3.67L12 2z"/></svg>
+            </span>
+            <span class="tool-label">התקנה</span>
+          </button>
+          <button type="button" id="btn-select-mode" class="tool-btn" title="בחירת אנשי קשר לייצוא" aria-label="בחירת אנשי קשר לייצוא">
+            <span class="tool-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            </span>
+            <span class="tool-label" id="select-label">בחירה</span>
+          </button>
+          <button type="button" id="btn-admin" class="tool-btn" title="כניסת ניהול" aria-label="כניסת ניהול">
+            <span class="tool-icon" aria-hidden="true">
+              <svg class="ico-lock" viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>
+              <svg class="ico-unlock" viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5-5.52 0-10 4.48-10 10v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM8.9 6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2H8.9V6z"/></svg>
+            </span>
+            <span class="tool-label" id="admin-label">ניהול</span>
+          </button></div><div id="sync-badge" class="sync-status hidden" role="status" aria-live="polite">
+          <span class="sync-dot" aria-hidden="true"></span>
+          <span>מסנכרן אנשי קשר...</span></div><div class="search-box">
+          <span class="search-ico" aria-hidden="true">🔍</span>
+          <input id="search" type="search" placeholder="חיפוש חכם: שם, טלפון, אימייל..." autocomplete="off" />
+          <button type="button" id="search-clear" class="search-clear hidden" aria-label="נקה חיפוש" title="נקה">×</button></div><p id="stats" class="stats">טוען...</p>
+      </header>
+
+      <main class="main">
+        <div id="skeleton" class="skeleton-list hidden">
+          <div class="sk-card"></div><div class="sk-card"></div><div class="sk-card"></div></div>
+        <ul id="contact-list" class="contact-list" role="list"></ul>
+        <div id="empty-state" class="empty-state hidden"><span class="empty-icon">🔎</span><p>לא נמצאו תוצאות</p></div>
+        <nav id="letter-nav" class="letter-nav hidden" aria-label="קפיצה לאות"></nav>
+      </main>
+
+      <button type="button" id="btn-scroll-top" class="scroll-top hidden" title="גלול למעלה" aria-label="גלול למעלה">
+        <span aria-hidden="true">↑</span>
+        <span class="scroll-top-label">למעלה</span>
+      </button>
+
+      <div id="fab-wrap" class="fab-wrap hidden">
+        <button type="button" id="fab-add" class="fab-mini" title="הוסף איש קשר">הוסף</button>
+        <button type="button" id="fab-import" class="fab-mini secondary" title="ייבוא מקובץ">ייבוא</button>
+        <button type="button" id="fab-dedupe" class="fab-mini secondary" title="מחק כפילויות בגיליון">כפילויות</button></div>
+      <button type="button" id="fab-main" class="fab" aria-label="תפריט ניהול" title="תפריט ניהול">
+        <span class="fab-plus" aria-hidden="true">+</span>
+        <span class="fab-label">ניהול</span>
+      </button>
+
+      <div id="select-bar" class="select-bar hidden">
+        <span id="select-count" class="select-count-text">0 נבחרו</span>
+        <div class="select-bar-actions">
+          <button type="button" id="btn-select-all" class="bar-btn" title="בחר את כל הרשימה">בחר הכל</button>
+          <button type="button" id="btn-export" class="bar-btn primary" title="ייצוא vCard">ייצוא</button>
+          <button type="button" id="btn-select-cancel" class="bar-btn ghost" title="ביטול מצב בחירה">ביטול</button></div></div>
+
+      <footer class="footer"><a href="https://wa.me/972586344879" target="_blank">© רועי בוכריס</a></footer>
+
+      <dialog id="auth-dialog" class="sheet sheet-form">
+        <div class="sheet-handle"></div>
+        <h2>כניסת ניהול</h2>
+        <p class="sheet-hint">הזן סיסמה כדי להוסיף או לייבא אנשי קשר</p>
+        <form id="auth-form">
+          <label class="field">
+            <span>סיסמה</span>
+            <input name="password" type="password" inputmode="numeric" autocomplete="off" required />
+          </label>
+          <div class="form-actions">
+            <button type="button" id="auth-cancel" class="sheet-btn ghost">ביטול</button>
+            <button type="submit" class="sheet-btn primary">אישור</button></div>
+        </form>
+      </dialog>
+
+      <dialog id="action-dialog" class="sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-head">
+          <div id="action-avatar" class="sheet-avatar">?</div>
+          <div><h2 id="action-name">שם</h2><p id="action-phone" class="sheet-sub"></p></div></div>
+        <div class="action-grid">
+          <button type="button" id="btn-call" class="action-tile call"><span>📞</span><small>התקשר</small></button>
+          <button type="button" id="btn-whatsapp" class="action-tile wa"><span>💬</span><small>וואטסאפ</small></button>
+          <button type="button" id="btn-save-device" class="action-tile save"><span>👤</span><small>שמור בטלפון</small></button>
+          <button type="button" id="btn-copy" class="action-tile copy"><span>📋</span><small>העתק</small></button></div>
+        <button type="button" id="action-close" class="sheet-btn ghost">סגור</button>
+      </dialog>
+
+      <dialog id="add-dialog" class="sheet sheet-form">
+        <div class="sheet-handle"></div>
+        <h2>איש קשר חדש</h2>
+        <form id="add-form">
+          <label class="field"><span>שם מלא</span><input name="name" required autocomplete="name" /></label>
+          <label class="field"><span>טלפון</span><input name="phone" required inputmode="tel" placeholder="058-1234567 / 02-1234567 / +972-5X-XXXXXXX" /></label>
+          <label class="field"><span>אימייל</span><input name="email" type="email" inputmode="email" /></label>
+          <div class="form-actions">
+            <button type="button" id="add-cancel" class="sheet-btn ghost">ביטול</button>
+            <button type="submit" id="add-submit" class="sheet-btn primary">
+              <span class="btn-text">שמור</span><span class="btn-spinner hidden"></span>
+            </button></div>
+        </form>
+      </dialog>
+
+      <dialog id="install-dialog" class="sheet sheet-form">
+        <div class="sheet-handle"></div>
+        <h2>התקנת האפליקציה</h2>
+        <p class="sheet-hint">הוסף קיצור דרך למסך הבית – עובד באייפון, אנדרואיד ומחשב</p>
+        <div id="install-steps-ios" class="install-steps hidden">
+          <p><strong>אייפון (Safari):</strong></p>
+          <ol>
+            <li>לחץ על כפתור <strong>שיתוף</strong> (החץ למעלה)</li>
+            <li>גלול ובחר <strong>הוסף למסך הבית</strong></li>
+            <li>לחץ <strong>הוסף</strong></li>
+          </ol></div>
+        <div id="install-steps-android" class="install-steps hidden">
+          <p><strong>אנדרואיד (Chrome):</strong></p>
+          <ol>
+            <li>מחק קיצור ישן מהמסך הבית (לחיצה ארוכה → הסר)</li>
+            <li>פתח את האתר, המתן שהלוגו בכותרת נטען</li>
+            <li>תפריט <strong>⋮</strong> → <strong>התקן אפליקציה</strong> (עדיף) או <strong>הוסף למסך הבית</strong></li>
+          </ol>
+          <button type="button" id="btn-install-native" class="sheet-btn primary block hidden">התקן עכשיו</button></div>
+        <div id="install-steps-desktop" class="install-steps hidden">
+          <p><strong>מחשב (Chrome / Edge):</strong></p>
+          <ol>
+            <li>חפש בסרגל הכתובת את סמל <strong>התקנה</strong> (⊕ או מחשב)</li>
+            <li>לחץ <strong>התקן</strong></li>
+          </ol>
+          <button type="button" id="btn-install-native-desk" class="sheet-btn primary block hidden">התקן עכשיו</button></div>
+        <button type="button" id="install-close" class="sheet-btn ghost">סגור</button>
+      </dialog>
+
+      <dialog id="import-dialog" class="sheet sheet-form">
+        <div class="sheet-handle"></div>
+        <h2>ייבוא אנשי קשר</h2>
+        <p class="sheet-hint">קובץ CSV או vCard מהטלפון / המחשב</p>
+        <div class="import-actions">
+          <button type="button" id="btn-pick-device" class="sheet-btn primary block">מהטלפון</button>
+          <label class="file-btn block">
+            בחר קובץ (CSV / vCard)
+            <input type="file" id="import-file" accept=".csv,.vcf,.vcard,text/vcard,text/csv" hidden />
+          </label></div>
+        <button type="button" id="import-close" class="sheet-btn ghost">סגור</button>
+      </dialog>
+
+      <div id="toast" class="toast" role="status"></div></div>
+    <script type="application/json" id="app-config">{"pwaHost":true,"manifestUrl":"./manifest.webmanifest","swUrl":"./sw.js","scope":"./"}</script>
+    <script type="application/json" id="contacts-bootstrap">[]</script>
+    <script src="./config.js"></script>
+    <script>(function () {
+  var CACHE_KEY = 'contacts_cache_v6';
+  var TOKEN_KEY = 'admin_token_v1';
+  var THEME_KEY = 'theme_v1';
+  var INSTALL_DISMISS_KEY = 'install_banner_dismiss_v1';
+  var THEME_COLORS = { light: '#0f1d42', dark: '#080f24' };
+  function setBrandLogoSrc_(el, src) {
+    if (!el || !src) return;
+    el.removeAttribute('alt');
+    el.src = String(src).trim();
+    el.dataset.logoLoaded = '1';
+  }
+
+  function logoSrcFromBootstrapData_(d) {
+    if (!d) return '';
+    if (d.type === 'dataUri' && d.src) return String(d.src);
+    if (d.type === 'base64' && d.parts && d.parts.length) {
+      return 'data:image/png;base64,' + d.parts.join('');
+    }
+    return '';
+  }
+
+  function applyBrandLogoPayload_(img, d) {
+    if (!img || !d) return false;
+    function setData() {
+      var src = logoSrcFromBootstrapData_(d);
+      if (src) {
+        setBrandLogoSrc_(img, src);
+        return true;
+      }
+      return false;
+    }
+    if (setData()) return true;
+    if (d.iconUrl) {
+      setBrandLogoSrc_(img, d.iconUrl);
+      return true;
+    }
+    return false;
+  }
+
+  function getLogoDataUriFromBootstrap_() {
+    var boot = document.getElementById('brand-logo-bootstrap');
+    if (!boot) return '';
+    try {
+      return logoSrcFromBootstrapData_(JSON.parse(boot.textContent || 'null'));
+    } catch (e) {}
+    return '';
+  }
+
+  function getPwaIconHrefFromBootstrap_() {
+    var boot = document.getElementById('brand-logo-bootstrap');
+    if (!boot) return '';
+    try {
+      var d = JSON.parse(boot.textContent || 'null');
+      return d.pwaIconUrl ? String(d.pwaIconUrl) : '';
+    } catch (e) {}
+    return '';
+  }
+
+  function installPwaHeadIcons_() {
+    var href = getPwaIconHrefFromBootstrap_();
+    if (
+      !href ||
+      /^data:/i.test(href) ||
+      /script\.google\.com/i.test(href) ||
+      document.documentElement.dataset.pwaIcons === '1'
+    ) {
+      return;
+    }
+    document.documentElement.dataset.pwaIcons = '1';
+    function addLink(rel, sizes) {
+      var l = document.createElement('link');
+      l.rel = rel;
+      l.type = 'image/png';
+      if (sizes) l.setAttribute('sizes', sizes);
+      l.href = href;
+      document.head.appendChild(l);
+    }
+    addLink('icon', '192x192');
+    addLink('shortcut icon', '192x192');
+    addLink('apple-touch-icon', '180x180');
+    addLink('apple-touch-icon', '192x192');
+    addLink('apple-touch-icon', '512x512');
+  }
+
+  function loadBrandLogoFromBootstrap() {
+    var boot = document.getElementById('brand-logo-bootstrap');
+    var img = document.getElementById('brand-logo');
+    if (!boot || !img || img.dataset.logoLoaded === '1') return false;
+    try {
+      return applyBrandLogoPayload_(img, JSON.parse(boot.textContent || 'null'));
+    } catch (e) {}
+    return false;
+  }
+
+  /** גיבוי onerror / טעינה כושלת */
+  window.__logoFallback = function (el) {
+    if (!el || el.dataset.logoFallback === '1') return;
+    el.dataset.logoFallback = '1';
+    if (loadBrandLogoFromBootstrap()) return;
+    if (typeof google === 'undefined' || !google.script || !google.script.run) return;
+    gasRun('getBrandLogoBootstrapPublic')
+      .then(function (d) {
+        applyBrandLogoPayload_(el, d);
+      })
+      .catch(function () {
+        gasRun('getBrandLogoBase64Public')
+          .then(function (src) {
+            if (src) setBrandLogoSrc_(el, src);
+          })
+          .catch(function () {
+            gasRun('getFallbackLogoDataUriPublic')
+              .then(function (src) {
+                if (src) setBrandLogoSrc_(el, src);
+              })
+              .catch(function () {});
+          });
+      });
+  };
+
+  function applyBrandLogo() {
+    if (loadBrandLogoFromBootstrap()) return;
+    var el = document.getElementById('brand-logo');
+    if (!el || el.tagName !== 'IMG') return;
+    if (el.complete && el.naturalWidth > 0) return;
+    window.__logoFallback(el);
+  }
+  var PHONE_REGEX = /^(?:\+972-\d{1,2}-\d{7}|0\d{1,2}-\d{7})$/;
+  var SEARCH_DELAY = 100;
+  var HEB_FINALS = { 'ך': 'כ', 'ם': 'מ', 'ן': 'נ', 'ף': 'פ', 'ץ': 'צ' };
+  var VIRTUAL_ROW_H = { header: 36, card: 92 };
+  var deferredInstallPrompt = null;
+  var virtualObserver = null;
+  var focusTrapHandler = null;
+  var focusTrapDialog = null;
+  var focusTrapPrev = null;
+
+  var state = {
+    contacts: [],
+    filtered: [],
+    selectedIds: {},
+    selectMode: false,
+    selectedContact: null,
+    adminToken: null,
+    lastSearchQuery: '',
+    syncing: false,
+    skeleton: true,
+    pendingAction: null,
+    displayRows: [],
+    renderGen: 0,
+  };
+
+  var els = {
+    app: document.getElementById('app'),
+    syncBadge: document.getElementById('sync-badge'),
+    skeleton: document.getElementById('skeleton'),
+    list: document.getElementById('contact-list'),
+    empty: document.getElementById('empty-state'),
+    search: document.getElementById('search'),
+    searchClear: document.getElementById('search-clear'),
+    stats: document.getElementById('stats'),
+    btnTheme: document.getElementById('btn-theme'),
+    btnRefresh: document.getElementById('btn-refresh'),
+    btnSelectMode: document.getElementById('btn-select-mode'),
+    btnAdmin: document.getElementById('btn-admin'),
+    letterNav: document.getElementById('letter-nav'),
+    btnScrollTop: document.getElementById('btn-scroll-top'),
+    fabMain: document.getElementById('fab-main'),
+    fabWrap: document.getElementById('fab-wrap'),
+    fabAdd: document.getElementById('fab-add'),
+    fabImport: document.getElementById('fab-import'),
+    fabDedupe: document.getElementById('fab-dedupe'),
+    selectBar: document.getElementById('select-bar'),
+    selectCount: document.getElementById('select-count'),
+    btnSelectAll: document.getElementById('btn-select-all'),
+    btnExport: document.getElementById('btn-export'),
+    btnSelectCancel: document.getElementById('btn-select-cancel'),
+    authDialog: document.getElementById('auth-dialog'),
+    authForm: document.getElementById('auth-form'),
+    authCancel: document.getElementById('auth-cancel'),
+    actionDialog: document.getElementById('action-dialog'),
+    actionAvatar: document.getElementById('action-avatar'),
+    actionName: document.getElementById('action-name'),
+    actionPhone: document.getElementById('action-phone'),
+    actionClose: document.getElementById('action-close'),
+    btnCall: document.getElementById('btn-call'),
+    btnWhatsapp: document.getElementById('btn-whatsapp'),
+    btnSaveDevice: document.getElementById('btn-save-device'),
+    btnCopy: document.getElementById('btn-copy'),
+    btnInstall: document.getElementById('btn-install'),
+    installDialog: document.getElementById('install-dialog'),
+    installStepsIos: document.getElementById('install-steps-ios'),
+    installStepsAndroid: document.getElementById('install-steps-android'),
+    installStepsDesktop: document.getElementById('install-steps-desktop'),
+    btnInstallNative: document.getElementById('btn-install-native'),
+    btnInstallNativeDesk: document.getElementById('btn-install-native-desk'),
+    installClose: document.getElementById('install-close'),
+    addDialog: document.getElementById('add-dialog'),
+    addForm: document.getElementById('add-form'),
+    addCancel: document.getElementById('add-cancel'),
+    addSubmit: document.getElementById('add-submit'),
+    btnText: document.querySelector('#add-submit .btn-text'),
+    btnSpinner: document.querySelector('#add-submit .btn-spinner'),
+    importDialog: document.getElementById('import-dialog'),
+    importFile: document.getElementById('import-file'),
+    btnPickDevice: document.getElementById('btn-pick-device'),
+    importClose: document.getElementById('import-close'),
+    toast: document.getElementById('toast'),
+  };
+
+  var searchTimer = null;
+  var toastTimer = null;
+
+  function setState(patch, opts) {
+    var k = Object.keys(patch);
+    for (var i = 0; i < k.length; i++) state[k[i]] = patch[k[i]];
+    if (!opts || opts.render !== false) renderApp();
+  }
+
+  function renderApp() {
+    updateAdminUI();
+    setSyncing(state.syncing);
+    setSkeleton(state.skeleton);
+    if (!state.selectMode) updateStats(state.filtered.length, state.lastSearchQuery);
+    renderVirtualList();
+  }
+
+  function openDialog(dialog) {
+    if (!dialog) return;
+    focusTrapPrev = document.activeElement;
+    document.body.classList.add('scroll-lock');
+    dialog.classList.add('dialog-open');
+    dialog.showModal();
+    trapFocusIn(dialog);
+    var first = dialog.querySelector('input, button, [href], select, textarea');
+    if (first) setTimeout(function () { first.focus(); }, 80);
+    dialog.addEventListener(
+      'close',
+      function () {
+        document.body.classList.remove('scroll-lock');
+        dialog.classList.remove('dialog-open');
+        releaseFocusTrap();
+        if (focusTrapPrev && focusTrapPrev.focus) focusTrapPrev.focus();
+      },
+      { once: true }
+    );
+  }
+
+  function closeDialog(dialog) {
+    if (dialog && dialog.open) dialog.close();
+  }
+
+  function trapFocusIn(dialog) {
+    releaseFocusTrap();
+    focusTrapDialog = dialog;
+    focusTrapHandler = function (e) {
+      if (e.key !== 'Tab' || !dialog.open) return;
+      var sel = 'button:not([disabled]), [href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
+      var nodes = Array.prototype.slice.call(dialog.querySelectorAll(sel));
+      if (!nodes.length) return;
+      var first = nodes[0];
+      var last = nodes[nodes.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', focusTrapHandler);
+  }
+
+  function releaseFocusTrap() {
+    if (focusTrapHandler) document.removeEventListener('keydown', focusTrapHandler);
+    focusTrapHandler = null;
+    focusTrapDialog = null;
+  }
+
+  function fullName(c) {
+    var a = c.firstName ? String(c.firstName) : '';
+    var b = c.lastName ? String(c.lastName) : '';
+    return (a + ' ' + b).trim();
+  }
+
+  function initial(c) {
+    var n = fullName(c);
+    return n ? n.charAt(0).toUpperCase() : '?';
+  }
+
+  function phoneDigits(p) {
+    var d = String(p || '').replace(/\D/g, '');
+    if (d.length === 12 && d.indexOf('972') === 0) d = '0' + d.slice(3);
+    if (d.length === 9 && d.charAt(0) !== '0') d = '0' + d;
+    return d;
+  }
+
+  function contactKey(c) {
+    var d = phoneDigits(c.phone);
+    if (d.length >= 9) return 'p:' + d;
+    return 'n:' + normalizeSearchText(fullName(c));
+  }
+
+  function normalizeSearchText(s) {
+    return String(s || '')
+      .toLowerCase()
+      .replace(/[\u0591-\u05c7]/g, '')
+      .replace(/[ךםןףץ]/g, function (ch) {
+        return HEB_FINALS[ch] || ch;
+      })
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function normalizeContact(c) {
+    return {
+      id: String((c && c.id) || ''),
+      firstName: String((c && c.firstName) || '')
+        .trim()
+        .replace(/\s+/g, ' '),
+      lastName: String((c && c.lastName) || '')
+        .trim()
+        .replace(/\s+/g, ' '),
+      phone: normalizePhoneLocal(c && c.phone),
+      email: String((c && c.email) || '')
+        .trim()
+        .toLowerCase(),
+    };
+  }
+
+  function contactScore(c) {
+    var s = 0;
+    if (c.firstName) s += 2;
+    if (c.lastName) s += 2;
+    if (PHONE_REGEX.test(c.phone || '')) s += 5;
+    if (c.email) s += 1;
+    return s;
+  }
+
+  function contactDedupeKey(c) {
+    var d = phoneDigits(c.phone);
+    if (d.length >= 9) return 'p:' + d;
+    var name = normalizeSearchText(fullName(c));
+    if (name) return 'n:' + name;
+    return 'id:' + String(c.id || '');
+  }
+
+  function nameHue(name) {
+    var h = 0;
+    var s = name || '?';
+    for (var i = 0; i < s.length; i++) h = s.charCodeAt(i) + ((h << 5) - h);
+    return Math.abs(h) % 360;
+  }
+
+  function avatarGradient(name) {
+    var hue = nameHue(name);
+    var h2 = (hue + 48) % 360;
+    return 'linear-gradient(135deg, hsl(' + hue + ',58%,42%), hsl(' + h2 + ',52%,32%))';
+  }
+
+  function dedupeAndSort(list) {
+    var map = {};
+    (list || []).forEach(function (c) {
+      var n = normalizeContact(c);
+      if (!n.firstName && !n.lastName && !n.phone) return;
+      var key = contactDedupeKey(n);
+      if (!map[key] || contactScore(n) > contactScore(map[key])) map[key] = n;
+    });
+    var out = Object.keys(map).map(function (k) {
+      return map[k];
+    });
+    return out.sort(function (a, b) {
+      var na = fullName(a);
+      var nb = fullName(b);
+      try {
+        return na.localeCompare(nb, 'he');
+      } catch (e) {
+        return na < nb ? -1 : na > nb ? 1 : 0;
+      }
+    });
+  }
+
+  function firstLetter(name) {
+    var t = (name || '').trim();
+    if (!t) return '#';
+    var c = t.charAt(0);
+    if (c >= '\u05d0' && c <= '\u05ea') return c;
+    if (/[a-zA-Z]/.test(c)) return c.toUpperCase();
+    return '#';
+  }
+
+  function scoreContact(c, tokens, rawQ) {
+    if (!tokens.length && rawQ.replace(/\D/g, '').length < 3) return 1;
+    var name = normalizeSearchText(fullName(c));
+    var fn = normalizeSearchText(c.firstName);
+    var ln = normalizeSearchText(c.lastName);
+    var phone = phoneDigits(c.phone);
+    var email = normalizeSearchText(c.email);
+    var qDigits = rawQ.replace(/\D/g, '');
+    var score = 0;
+
+    tokens.forEach(function (t) {
+      if (!t) return;
+      if (name.indexOf(t) >= 0) score += 12;
+      if (fn.indexOf(t) === 0) score += 18;
+      if (ln.indexOf(t) === 0) score += 16;
+      if (email.indexOf(t) >= 0) score += 8;
+      var td = phoneDigits(t);
+      if (td.length >= 2 && phone.indexOf(td) >= 0) score += 22;
+    });
+
+    if (qDigits.length >= 3 && phone.indexOf(qDigits) >= 0) score += 28;
+
+    var parts = name.split(' ').filter(Boolean);
+    if (tokens.length >= 2 && parts.length >= 2) {
+      if (parts[0].charAt(0) === tokens[0].charAt(0) && parts[1].charAt(0) === tokens[1].charAt(0)) {
+        score += 14;
+      }
+    }
+
+    return score;
+  }
+
+  function setHighlightedText(el, text, query) {
+    el.textContent = '';
+    if (!text) return;
+    if (!query) {
+      el.textContent = text;
+      return;
+    }
+    var lower = text.toLowerCase();
+    var qi = lower.indexOf(query.toLowerCase());
+    if (qi < 0) {
+      el.textContent = text;
+      return;
+    }
+    el.appendChild(document.createTextNode(text.slice(0, qi)));
+    var mark = document.createElement('mark');
+    mark.textContent = text.slice(qi, qi + query.length);
+    el.appendChild(mark);
+    el.appendChild(document.createTextNode(text.slice(qi + query.length)));
+  }
+
+  function loadCache() {
+    try {
+      var raw = localStorage.getItem(CACHE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function saveCache(list) {
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify(list));
+    } catch (e) {}
+  }
+
+  function loadToken() {
+    try {
+      return sessionStorage.getItem(TOKEN_KEY) || null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function saveToken(t) {
+    try {
+      if (t) sessionStorage.setItem(TOKEN_KEY, t);
+      else sessionStorage.removeItem(TOKEN_KEY);
+    } catch (e) {}
+    setState({ adminToken: t }, { render: false });
+    updateAdminUI();
+  }
+
+  function isAdmin() {
+    return !!state.adminToken;
+  }
+
+  function useApiTransport_() {
+    if (window.PWA_API_URL) return true;
+    try {
+      var cfg = loadAppConfig();
+      if (cfg && cfg.pwaHost) return true;
+    } catch (e) {}
+    if (typeof google === 'undefined' || !google.script || !google.script.run) return true;
+    return !/script\.google\.com$/i.test(location.hostname || '');
+  }
+
+  function getApiBaseUrl_() {
+    if (window.PWA_API_URL) return String(window.PWA_API_URL).replace(/\/$/, '').split('?')[0];
+    var cfg = loadAppConfig();
+    if (cfg && cfg.apiUrl) return String(cfg.apiUrl).replace(/\/$/, '').split('?')[0];
+    return '';
+  }
+
+  function apiFetchJson_(url, options) {
+    return fetch(url, options || {}).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    });
+  }
+
+  function gasPost_(body) {
+    return apiFetchJson_(getApiBaseUrl_(), {
+      method: 'POST',
+      redirect: 'follow',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(body),
+    });
+  }
+
+  function gasRun(fnName) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    if (!useApiTransport_()) {
+      return new Promise(function (resolve, reject) {
+        var runner = google.script.run.withSuccessHandler(resolve).withFailureHandler(reject);
+        runner[fnName].apply(runner, args);
+      });
+    }
+    var base = getApiBaseUrl_();
+    if (!base) {
+      return Promise.reject(new Error('חסר כתובת API – ערוך config.js והדבק את כתובת /exec'));
+    }
+    switch (fnName) {
+      case 'listContactsPublic':
+        return apiFetchJson_(base + '?action=list', { method: 'GET', redirect: 'follow' });
+      case 'verifyPasswordPublic':
+        return gasPost_({ action: 'verify', password: args[0] });
+      case 'addContactPublic':
+        return gasPost_({ action: 'add', token: args[0], contact: args[1] });
+      case 'importContactsPublic':
+        return gasPost_({ action: 'import', token: args[0], contacts: args[1] });
+      case 'dedupeSheetPublic':
+        return gasPost_({ action: 'dedupe', token: args[0] });
+      case 'getBrandLogoBootstrapPublic':
+        return apiFetchJson_(base + '?action=logo', { method: 'GET', redirect: 'follow' });
+      case 'getBrandLogoBase64Public':
+        return apiFetchJson_(base + '?action=logo', { method: 'GET', redirect: 'follow' }).then(function (d) {
+          if (d.type === 'dataUri' && d.src) return d.src;
+          if (d.type === 'base64' && d.parts && d.parts.length) {
+            return 'data:image/png;base64,' + d.parts.join('');
+          }
+          return '';
+        });
+      case 'getFallbackLogoDataUriPublic':
+        return Promise.resolve('');
+      default:
+        return Promise.reject(new Error('לא נתמך ב-API: ' + fnName));
+    }
+  }
+
+  function showToast(msg) {
+    els.toast.textContent = msg;
+    els.toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      els.toast.classList.remove('show');
+    }, 2600);
+  }
+
+  function setToolBtnLabel(btn, label) {
+    if (!btn) return;
+    var el = btn.querySelector('.tool-label');
+    if (el) el.textContent = label;
+    btn.setAttribute('aria-label', label);
+    btn.setAttribute('title', label);
+  }
+
+  function updateAdminUI() {
+    var on = !!state.adminToken;
+    if (els.btnAdmin) {
+      els.btnAdmin.classList.toggle('unlocked', on);
+      setToolBtnLabel(els.btnAdmin, on ? 'יציאה מניהול' : 'כניסת ניהול');
+    }
+    if (els.fabWrap) els.fabWrap.classList.toggle('hidden', !on);
+  }
+
+  function requireAdmin(action) {
+    if (isAdmin()) {
+      action();
+      return;
+    }
+    setState({ pendingAction: action }, { render: false });
+    els.authForm.reset();
+    openDialog(els.authDialog);
+  }
+
+  function setSyncing(on) {
+    els.syncBadge.classList.toggle('hidden', !on);
+  }
+
+  function setSkeleton(on) {
+    if (els.skeleton) els.skeleton.classList.toggle('hidden', !on);
+    if (els.list) {
+      els.list.classList.remove('hidden');
+      els.list.style.display = on ? 'none' : 'flex';
+    }
+  }
+
+  function updateStats(count, query) {
+    if (state.selectMode) return;
+    if (query) {
+      els.stats.textContent = count + ' תוצאות מתוך ' + state.contacts.length;
+    } else {
+      els.stats.textContent = count + ' אנשי קשר';
+    }
+  }
+
+  function updateSelectCount() {
+    var n = Object.keys(state.selectedIds).length;
+    els.selectCount.textContent = n + ' נבחרו';
+  }
+
+  function textEl(tag, className, text) {
+    var el = document.createElement(tag);
+    if (className) el.className = className;
+    if (text != null) el.textContent = text;
+    return el;
+  }
+
+  function buildCard(contact) {
+    var li = document.createElement('li');
+    var key = contactKey(contact);
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'contact-card';
+    if (state.selectMode) btn.className += ' select-mode';
+    if (state.selectedIds[key]) btn.className += ' selected';
+    btn.dataset.letter = firstLetter(fullName(contact));
+
+    if (state.selectMode) {
+      var chk = document.createElement('input');
+      chk.type = 'checkbox';
+      chk.className = 'card-check';
+      chk.checked = !!state.selectedIds[key];
+      chk.onclick = function (e) {
+        e.stopPropagation();
+        toggleSelect(contact);
+      };
+      btn.appendChild(chk);
+    }
+
+    var avatar = textEl('span', 'avatar', initial(contact));
+    avatar.style.background = avatarGradient(fullName(contact));
+    var info = document.createElement('span');
+    info.className = 'contact-info';
+    var nameEl = document.createElement('p');
+    nameEl.className = 'contact-name';
+    setHighlightedText(nameEl, fullName(contact) || 'ללא שם', state.lastSearchQuery);
+    var phoneEl = document.createElement('p');
+    phoneEl.className = 'contact-phone';
+    setHighlightedText(phoneEl, contact.phone || '', state.lastSearchQuery);
+    info.appendChild(nameEl);
+    info.appendChild(phoneEl);
+    if (contact.email) {
+      var emailEl = document.createElement('p');
+      emailEl.className = 'contact-email';
+      emailEl.textContent = contact.email;
+      info.appendChild(emailEl);
+    }
+
+    btn.appendChild(avatar);
+    btn.appendChild(info);
+
+    if (!state.selectMode) {
+      btn.appendChild(textEl('span', 'contact-chevron', '‹'));
+    }
+
+    btn.addEventListener('pointerdown', function (e) {
+      var r = btn.getBoundingClientRect();
+      btn.style.setProperty('--rx', ((e.clientX - r.left) / r.width) * 100 + '%');
+      btn.style.setProperty('--ry', ((e.clientY - r.top) / r.height) * 100 + '%');
+    });
+
+    btn.onclick = function () {
+      if (state.selectMode) toggleSelect(contact);
+      else openAction(contact);
+    };
+    li.appendChild(btn);
+    li.id = 'contact-' + key.replace(/[^a-zA-Z0-9_-]/g, '_');
+    return li;
+  }
+
+  function buildSectionHeader(letter) {
+    var el = document.createElement('div');
+    el.className = 'list-section-header';
+    el.id = 'section-' + letter;
+    el.textContent = letter;
+    return el;
+  }
+
+  function scrollToLetter(letter) {
+    if (!els.list || !state.displayRows.length) return;
+    for (var i = 0; i < state.displayRows.length; i++) {
+      var row = state.displayRows[i];
+      if (row.type === 'header' && row.letter === letter) {
+        var slot = els.list.children[i];
+        if (!slot) return;
+        mountVirtualSlot(slot);
+        var target = slot.querySelector('.list-section-header') || slot;
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+    }
+  }
+
+  function toggleSelect(contact) {
+    var key = contactKey(contact);
+    var next = Object.assign({}, state.selectedIds);
+    if (next[key]) delete next[key];
+    else next[key] = contact;
+    setState({ selectedIds: next }, { render: false });
+    updateSelectCount();
+    computeFilter();
+  }
+
+  function buildDisplayRows(items) {
+    var rows = [];
+    var showSections = !state.lastSearchQuery && !state.selectMode;
+    var lastLetter = '';
+    (items || []).forEach(function (c) {
+      if (showSections) {
+        var letter = firstLetter(fullName(c));
+        if (letter !== lastLetter) {
+          lastLetter = letter;
+          rows.push({ type: 'header', letter: letter });
+        }
+      }
+      rows.push({ type: 'card', contact: c });
+    });
+    return rows;
+  }
+
+  function mountVirtualSlot(slot) {
+    if (slot.dataset.mounted === '1') return;
+    var idx = parseInt(slot.dataset.index, 10);
+    var row = state.displayRows[idx];
+    if (!row) return;
+    slot.innerHTML = '';
+    slot.className = 'virtual-slot virtual-slot--' + row.type;
+    if (row.type === 'header') {
+      slot.appendChild(buildSectionHeader(row.letter));
+    } else {
+      var cardLi = buildCard(row.contact);
+      while (cardLi.firstChild) slot.appendChild(cardLi.firstChild);
+      slot.classList.add('stagger-in');
+      slot.style.animationDelay = Math.min((idx % 12) * 0.03, 0.35) + 's';
+    }
+    slot.dataset.mounted = '1';
+  }
+
+  function unmountVirtualSlot(slot) {
+    if (slot.dataset.mounted !== '1') return;
+    var row = state.displayRows[parseInt(slot.dataset.index, 10)];
+    slot.innerHTML = '';
+    slot.className = 'virtual-slot virtual-slot--' + (row ? row.type : 'card');
+    slot.style.minHeight = (row && row.type === 'header' ? VIRTUAL_ROW_H.header : VIRTUAL_ROW_H.card) + 'px';
+    slot.dataset.mounted = '0';
+  }
+
+  function setupVirtualObserver() {
+    if (virtualObserver) virtualObserver.disconnect();
+    if (!('IntersectionObserver' in window) || !els.list) {
+      state.displayRows.forEach(function (row, i) {
+        var slot = els.list.children[i];
+        if (slot) mountVirtualSlot(slot);
+      });
+      return;
+    }
+    virtualObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) mountVirtualSlot(entry.target);
+          else unmountVirtualSlot(entry.target);
+        });
+      },
+      { root: null, rootMargin: '280px 0px 280px 0px', threshold: 0 }
+    );
+    Array.prototype.forEach.call(els.list.querySelectorAll('.virtual-slot'), function (slot) {
+      virtualObserver.observe(slot);
+    });
+  }
+
+  function renderVirtualList() {
+    if (!els.list) return;
+    state.renderGen++;
+    var gen = state.renderGen;
+    if (virtualObserver) virtualObserver.disconnect();
+    els.list.innerHTML = '';
+    if (els.empty) els.empty.classList.add('hidden');
+    if (els.letterNav) els.letterNav.classList.add('hidden');
+    var items = state.filtered;
+    if (!items || !items.length) {
+      if (els.empty) els.empty.classList.remove('hidden');
+      return;
+    }
+    state.displayRows = buildDisplayRows(items);
+    var frag = document.createDocumentFragment();
+    state.displayRows.forEach(function (row, i) {
+      var slot = document.createElement('li');
+      slot.className = 'virtual-slot virtual-slot--' + row.type;
+      slot.dataset.index = String(i);
+      slot.dataset.mounted = '0';
+      slot.style.minHeight = (row.type === 'header' ? VIRTUAL_ROW_H.header : VIRTUAL_ROW_H.card) + 'px';
+      frag.appendChild(slot);
+    });
+    els.list.appendChild(frag);
+    els.list.style.display = 'flex';
+    els.list.classList.remove('hidden');
+    if (gen === state.renderGen) {
+      setupVirtualObserver();
+      buildLetterNav(items);
+    }
+  }
+
+  function buildLetterNav(items) {
+    if (!els.letterNav || state.lastSearchQuery || state.selectMode) {
+      if (els.letterNav) els.letterNav.classList.add('hidden');
+      return;
+    }
+    var letters = [];
+    var seen = {};
+    items.forEach(function (c) {
+      var L = firstLetter(fullName(c));
+      if (!seen[L]) {
+        seen[L] = true;
+        letters.push(L);
+      }
+    });
+    if (letters.length < 4) {
+      els.letterNav.classList.add('hidden');
+      return;
+    }
+    els.letterNav.innerHTML = '';
+    letters.forEach(function (L) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = L;
+      b.setAttribute('aria-label', 'קפיצה לאות ' + L);
+      b.onclick = function () {
+        scrollToLetter(L);
+      };
+      els.letterNav.appendChild(b);
+    });
+    els.letterNav.classList.remove('hidden');
+  }
+
+  function computeFilter() {
+    var q = els.search.value.trim();
+    var qNorm = normalizeSearchText(q);
+    var tokens = qNorm ? qNorm.split(' ').filter(Boolean) : [];
+    els.searchClear.classList.toggle('hidden', !q);
+
+    var base = state.contacts.slice();
+
+    var filtered;
+    if (tokens.length || q.replace(/\D/g, '').length >= 3) {
+      filtered = base
+        .map(function (c) {
+          return { c: c, s: scoreContact(c, tokens, q) };
+        })
+        .filter(function (x) {
+          return x.s > 0;
+        })
+        .sort(function (a, b) {
+          return b.s - a.s;
+        })
+        .map(function (x) {
+          return x.c;
+        });
+    } else {
+      filtered = base;
+    }
+
+    setState({ lastSearchQuery: q, filtered: filtered });
+  }
+
+  function applyFilter() {
+    computeFilter();
+  }
+
+  function runDedupeSheet() {
+    if (!isAdmin()) {
+      requireAdmin(runDedupeSheet);
+      return;
+    }
+    if (!confirm('לנקות כפילויות מהגיליון ולתקן פורמט טלפון? פעולה זו לא ניתנת לביטול.')) return;
+    showToast('מנקה כפילויות...');
+    gasRun('dedupeSheetPublic', state.adminToken)
+      .then(function (res) {
+        if (!res.ok) {
+          showToast(res.error || 'שגיאה');
+          return;
+        }
+        showToast('הוסרו ' + (res.removed || 0) + ' כפילויות · ' + res.total + ' נשארו');
+        refreshFromServer();
+      })
+      .catch(function (err) {
+        showToast('שגיאה: ' + (err.message || err));
+      });
+  }
+
+  function openAction(contact) {
+    setState({ selectedContact: contact }, { render: false });
+    var name = fullName(contact);
+    els.actionName.textContent = name || 'ללא שם';
+    els.actionPhone.textContent = contact.phone || '';
+    if (contact.email) els.actionPhone.textContent += (contact.phone ? ' · ' : '') + contact.email;
+    els.actionAvatar.textContent = initial(contact);
+    els.actionAvatar.style.background = avatarGradient(name);
+    openDialog(els.actionDialog);
+  }
+
+  function openAdd() {
+    els.addForm.reset();
+    els.addSubmit.disabled = false;
+    els.btnText.classList.remove('hidden');
+    els.btnSpinner.classList.add('hidden');
+    openDialog(els.addDialog);
+    setTimeout(function () {
+      var f = els.addForm.querySelector('input[name="name"]');
+      if (f) f.focus();
+    }, 350);
+  }
+
+  function openImport() {
+    openDialog(els.importDialog);
+  }
+
+  function enterSelectMode() {
+    if (els.app) els.app.classList.add('selecting');
+    els.selectBar.classList.remove('hidden');
+    if (els.btnSelectMode) {
+      els.btnSelectMode.classList.add('active');
+      setToolBtnLabel(els.btnSelectMode, 'סיום');
+    }
+    setState({ selectMode: true, selectedIds: {} }, { render: false });
+    updateSelectCount();
+    computeFilter();
+  }
+
+  function exitSelectMode() {
+    if (els.app) els.app.classList.remove('selecting');
+    els.selectBar.classList.add('hidden');
+    if (els.btnSelectMode) {
+      els.btnSelectMode.classList.remove('active');
+      setToolBtnLabel(els.btnSelectMode, 'בחירה');
+    }
+    setState({ selectMode: false, selectedIds: {} });
+  }
+
+  function getSelectedList() {
+    return Object.keys(state.selectedIds).map(function (k) {
+      return state.selectedIds[k];
+    });
+  }
+
+  function normalizePhone(phone) {
+    var digits = phone.replace(/\D/g, '');
+    if (phone.indexOf('+') === 0) return phone.slice(1);
+    if (digits.indexOf('0') === 0) return '972' + digits.slice(1);
+    return '972' + digits;
+  }
+
+  function formatPhoneInput(val) {
+    var raw = String(val || '').trim();
+    if (raw.indexOf('+') === 0) {
+      var digits = raw.replace(/\D/g, '');
+      if (digits.indexOf('972') !== 0) return raw;
+      var local = digits.slice(3).slice(0, 10);
+      if (!local.length) return '+972-';
+      var areaLen = local.charAt(0) === '0' ? 2 : 1;
+      var area = local.slice(0, areaLen);
+      var num = local.slice(areaLen, areaLen + 7);
+      return '+972-' + area + (num.length ? '-' + num : '');
+    }
+    var d = raw.replace(/\D/g, '').slice(0, 10);
+    if (!d.length) return '';
+    if (d.length <= 3) return d;
+    if (d.charAt(0) === '0') return d.slice(0, 3) + '-' + d.slice(3);
+    return d;
+  }
+
+  function normalizePhoneLocal(p) {
+    var raw = String(p || '').trim();
+    if (/^(?:\+972-\d{1,2}-\d{7}|0\d{1,2}-\d{7})$/.test(raw)) return raw;
+    var d = raw.replace(/\D/g, '');
+    if (raw.indexOf('+972') === 0 || (d.indexOf('972') === 0 && d.length >= 11)) {
+      var local = d.indexOf('972') === 0 ? d.slice(3) : d;
+      if (local.length === 9) return '+972-' + local.charAt(0) + '-' + local.slice(1);
+      if (local.length === 10 && local.charAt(0) === '0') {
+        return '+972-' + local.charAt(1) + '-' + local.slice(2);
+      }
+    }
+    if (d.length === 10 && d.charAt(0) === '0') return d.slice(0, 3) + '-' + d.slice(3);
+    if (d.length === 9) return '0' + d.charAt(0) + '-' + d.slice(1);
+    return raw;
+  }
+
+  function parseCsv(text) {
+    var lines = text.split(/\r?\n/).filter(function (l) {
+      return l.trim();
+    });
+    if (!lines.length) return [];
+    var out = [];
+    var start = 0;
+    var first = lines[0].toLowerCase();
+    if (first.indexOf('first') >= 0 || first.indexOf('שם') >= 0 || first.indexOf('id') === 0) start = 1;
+    for (var i = start; i < lines.length; i++) {
+      var parts = lines[i].split(',');
+      if (parts.length < 3) continue;
+      var id = parts[0];
+      var fn = parts[1];
+      var ln = parts[2];
+      var ph = parts[3];
+      if (!ph && parts.length >= 3 && /^\d/.test(parts[2])) {
+        fn = parts[0];
+        ln = '';
+        ph = parts[1];
+      }
+      out.push({
+        firstName: String(fn || '').trim(),
+        lastName: String(ln || '').trim(),
+        phone: normalizePhoneLocal(ph),
+        email: String(parts[4] || '').trim(),
+      });
+    }
+    return out;
+  }
+
+  function parseVcard(text) {
+    var out = [];
+    var blocks = text.split(/BEGIN:VCARD/i);
+    blocks.forEach(function (block) {
+      if (!block.trim()) return;
+      var fn = '';
+      var ln = '';
+      var phone = '';
+      var email = '';
+      block.split(/\r?\n/).forEach(function (line) {
+        if (line.indexOf('FN:') === 0) {
+          var n = line.slice(3).trim().split(/\s+/, 2);
+          fn = n[0] || '';
+          ln = n[1] || '';
+        }
+        if (line.indexOf('N:') === 0 && !fn) {
+          var p = line.slice(2).split(';');
+          ln = (p[0] || '').trim();
+          fn = (p[1] || '').trim();
+        }
+        if (line.indexOf('TEL') >= 0) {
+          var t = line.split(':').pop();
+          if (t && !phone) phone = normalizePhoneLocal(t);
+        }
+        if (line.indexOf('EMAIL') >= 0 && !email) email = line.split(':').pop().trim();
+      });
+      if (fn || ln || phone) {
+        out.push({ firstName: fn, lastName: ln, phone: phone, email: email });
+      }
+    });
+    return out;
+  }
+
+  function downloadFile(name, content, mime) {
+    var blob = new Blob([content], { type: mime });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () {
+      URL.revokeObjectURL(url);
+    }, 4000);
+  }
+
+  function safeFileName(name) {
+    return String(name || 'contact')
+      .replace(/[\\/:*?"<>|]/g, '_')
+      .trim()
+      .slice(0, 48) || 'contact';
+  }
+
+  function detectPlatform() {
+    var ua = navigator.userAgent || '';
+    if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+      return 'ios';
+    }
+    if (/Android/i.test(ua)) return 'android';
+    return 'desktop';
+  }
+
+  function isStandaloneApp() {
+    return (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true
+    );
+  }
+
+  function loadAppConfig() {
+    var el = document.getElementById('app-config');
+    if (!el || !el.textContent) return null;
+    try {
+      return JSON.parse(el.textContent);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function shareOrDownloadVcard(vcf, fileName, contactName) {
+    var file = new File([vcf], fileName, { type: 'text/vcard;charset=utf-8' });
+    if (navigator.share) {
+      var withFile = { files: [file], title: contactName || 'איש קשר' };
+      if (navigator.canShare && navigator.canShare(withFile)) {
+        return navigator
+          .share(withFile)
+          .then(function () {
+            showToast('בחר «אנשי קשר» / Contacts לשמירה');
+          })
+          .catch(function (err) {
+            if (err && err.name === 'AbortError') return;
+            downloadFile(fileName, vcf, 'text/vcard;charset=utf-8');
+            showToast('נפתח קובץ – לחץ לייבוא לאנשי קשר');
+          });
+      }
+    }
+    downloadFile(fileName, vcf, 'text/vcard;charset=utf-8');
+    showToast('פתח את הקובץ ולחץ «הוסף» / «ייבא»');
+    return Promise.resolve();
+  }
+
+  function saveContactToDevice(contact) {
+    if (!contact) return Promise.resolve();
+    var vcf = toVcard([contact]);
+    var fileName = safeFileName(fullName(contact)) + '.vcf';
+    var name = fullName(contact) || 'איש קשר';
+
+    if (navigator.contacts && typeof navigator.contacts.save === 'function') {
+      return navigator.contacts
+        .save({
+          name: [name],
+          tel: contact.phone ? [contact.phone] : [],
+          email: contact.email ? [contact.email] : [],
+        })
+        .then(function () {
+          showToast('נשמר באנשי קשר!');
+          closeDialog(els.actionDialog);
+        })
+        .catch(function () {
+          return shareOrDownloadVcard(vcf, fileName, name);
+        });
+    }
+
+    return shareOrDownloadVcard(vcf, fileName, name).then(function () {
+      closeDialog(els.actionDialog);
+    });
+  }
+
+  function registerServiceWorker() {
+    var cfg = loadAppConfig();
+    if (!cfg || !cfg.swUrl || !('serviceWorker' in navigator)) return;
+    var opts;
+    if (cfg.scope && String(cfg.scope).indexOf('http') === 0) {
+      opts = { scope: cfg.scope };
+    }
+    navigator.serviceWorker
+      .getRegistrations()
+      .then(function (regs) {
+        return Promise.all(
+          regs.map(function (r) {
+            return r.unregister();
+          })
+        );
+      })
+      .catch(function () {})
+      .then(function () {
+        return navigator.serviceWorker.register(cfg.swUrl, opts);
+      })
+      .catch(function () {});
+  }
+
+  function applyStandaloneChrome_() {
+    if (!isStandaloneApp()) return;
+    document.documentElement.classList.add('pwa-standalone');
+    if (els.btnInstall) els.btnInstall.classList.add('hidden');
+  }
+
+  function showInstallSteps() {
+    var platform = detectPlatform();
+    if (els.installStepsIos) els.installStepsIos.classList.toggle('hidden', platform !== 'ios');
+    if (els.installStepsAndroid) els.installStepsAndroid.classList.toggle('hidden', platform !== 'android');
+    if (els.installStepsDesktop) els.installStepsDesktop.classList.toggle('hidden', platform !== 'desktop');
+    var canNative = !!deferredInstallPrompt;
+    if (els.btnInstallNative) els.btnInstallNative.classList.toggle('hidden', !canNative || platform !== 'android');
+    if (els.btnInstallNativeDesk) {
+      els.btnInstallNativeDesk.classList.toggle('hidden', !canNative || platform !== 'desktop');
+    }
+  }
+
+  function openInstallDialog() {
+    showInstallSteps();
+    openDialog(els.installDialog);
+  }
+
+  function runNativeInstall() {
+    if (!deferredInstallPrompt) {
+      openInstallDialog();
+      return;
+    }
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then(function () {
+      deferredInstallPrompt = null;
+      if (els.btnInstall) els.btnInstall.classList.add('hidden');
+      if (els.installDialog) closeDialog(els.installDialog);
+      showToast('האפליקציה הותקנה!');
+    });
+  }
+
+  function initInstallUi() {
+    registerServiceWorker();
+    applyStandaloneChrome_();
+    if (isStandaloneApp()) return;
+
+    var cfg = loadAppConfig();
+    if (
+      cfg &&
+      !cfg.pwaHost &&
+      cfg.pwaIconReady === false &&
+      typeof showToast === 'function'
+    ) {
+      showToast('להתקנה מלאה: הרץ setupPwaIconOnDrive ב-Apps Script');
+    }
+
+    if (els.btnInstall) els.btnInstall.classList.remove('hidden');
+
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      if (els.btnInstall) {
+        els.btnInstall.classList.remove('hidden');
+        els.btnInstall.classList.add('install-ready');
+      }
+      showInstallSteps();
+    });
+
+    window.addEventListener('appinstalled', function () {
+      deferredInstallPrompt = null;
+      if (els.btnInstall) els.btnInstall.classList.add('hidden');
+      showToast('האפליקציה הותקנה!');
+    });
+
+    try {
+      if (!localStorage.getItem(INSTALL_DISMISS_KEY)) {
+        setTimeout(function () {
+          if (!isStandaloneApp() && els.installDialog && !els.installDialog.open) {
+            openInstallDialog();
+            localStorage.setItem(INSTALL_DISMISS_KEY, '1');
+          }
+        }, 2500);
+      }
+    } catch (e) {}
+  }
+
+  function toVcard(list) {
+    var lines = [];
+    list.forEach(function (c) {
+      var n = fullName(c);
+      lines.push('BEGIN:VCARD');
+      lines.push('VERSION:3.0');
+      lines.push('FN:' + n);
+      lines.push('N:' + (c.lastName || '') + ';' + (c.firstName || '') + ';;;');
+      if (c.phone) lines.push('TEL;TYPE=CELL:' + c.phone);
+      if (c.email) lines.push('EMAIL:' + c.email);
+      lines.push('END:VCARD');
+    });
+    return lines.join('\n');
+  }
+
+  function toCsv(list) {
+    var rows = ['id,firstName,lastName,phone,email'];
+    list.forEach(function (c) {
+      rows.push([c.id || '', c.firstName || '', c.lastName || '', c.phone || '', c.email || ''].join(','));
+    });
+    return rows.join('\n');
+  }
+
+  function exportSelected() {
+    var list = getSelectedList();
+    if (!list.length) {
+      showToast('בחר לפחות איש קשר אחד');
+      return;
+    }
+    var vcf = toVcard(list);
+    if (navigator.share && navigator.canShare) {
+      var file = new File([vcf], 'contacts.vcf', { type: 'text/vcard' });
+      if (navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], title: 'אנשי קשר' }).catch(function () {
+          downloadFile('contacts.vcf', vcf, 'text/vcard');
+        });
+        return;
+      }
+    }
+    downloadFile('contacts-export.vcf', vcf, 'text/vcard');
+    showToast('יוצא ' + list.length + ' אנשי קשר');
+  }
+
+  function doImport(list) {
+    if (!list.length) {
+      showToast('לא נמצאו אנשי קשר בקובץ');
+      return;
+    }
+    showToast('מייבא ' + list.length + '...');
+    gasRun('importContactsPublic', state.adminToken, list)
+      .then(function (res) {
+        if (!res.ok) {
+          showToast(res.error || 'שגיאה');
+          return;
+        }
+        if (res.contacts && res.contacts.length) {
+          var merged = dedupeAndSort(state.contacts.concat(res.contacts));
+          saveCache(merged);
+          setState({ contacts: merged });
+        }
+        els.importDialog.close();
+        showToast('יובאו ' + (res.addedCount || 0) + ' אנשי קשר');
+        refreshFromServer();
+      })
+      .catch(function (err) {
+        showToast('שגיאה: ' + (err.message || err));
+      });
+  }
+
+  function refreshFromServer() {
+    setState({ syncing: true }, { render: false });
+    setSyncing(true);
+    gasRun('listContactsPublic')
+      .then(function (data) {
+        if (data.ok && data.contacts) {
+          var list = dedupeAndSort(data.contacts);
+          saveCache(list);
+          setState({ contacts: list });
+        }
+      })
+      .finally(function () {
+        setState({ syncing: false }, { render: false });
+        setSyncing(false);
+      });
+  }
+
+  function pickFromDevice() {
+    if (!navigator.contacts || !navigator.contacts.select) {
+      showToast('לא נתמך בדפדפן זה – בחר קובץ');
+      return;
+    }
+    navigator.contacts
+      .select(['name', 'tel', 'email'], { multiple: true })
+      .then(function (picked) {
+        var list = [];
+        picked.forEach(function (p) {
+          var name = (p.name && p.name[0]) || '';
+          var parts = name.trim().split(/\s+/, 2);
+          var tel = (p.tel && p.tel[0]) || '';
+          list.push({
+            firstName: parts[0] || '',
+            lastName: parts[1] || '',
+            phone: normalizePhoneLocal(tel),
+            email: (p.email && p.email[0]) || '',
+          });
+        });
+        doImport(dedupeAndSort(list.map(normalizeContact)));
+      })
+      .catch(function () {
+        showToast('בוטל או לא זמין');
+      });
+  }
+
+  function handleFile(file) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      var text = reader.result || '';
+      var name = (file.name || '').toLowerCase();
+      var list = name.indexOf('.vcf') >= 0 ? parseVcard(text) : parseCsv(text);
+      doImport(dedupeAndSort(list.map(normalizeContact)));
+    };
+    reader.readAsText(file);
+  }
+
+  function getStoredTheme() {
+    try {
+      var t = localStorage.getItem(THEME_KEY);
+      return t === 'dark' || t === 'light' ? t : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function getEffectiveTheme() {
+    var stored = getStoredTheme();
+    if (stored) return stored;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
+  }
+
+  function updateThemeMeta(theme) {
+    var meta = document.getElementById('meta-theme-color');
+    if (meta) meta.setAttribute('content', THEME_COLORS[theme] || THEME_COLORS.light);
+  }
+
+  function updateThemeToggleUi(theme) {
+    if (!els.btnTheme) return;
+    var isDark = theme === 'dark';
+    var label = isDark ? 'בהיר' : 'כהה';
+    els.btnTheme.classList.toggle('is-dark', isDark);
+    var themeLabel = document.getElementById('theme-label');
+    if (themeLabel) themeLabel.textContent = label;
+    els.btnTheme.setAttribute('aria-label', isDark ? 'עבור למצב בהיר' : 'עבור למצב כהה');
+    els.btnTheme.setAttribute('title', isDark ? 'מצב בהיר' : 'מצב כהה');
+  }
+
+  function applyTheme(mode, persist) {
+    var root = document.documentElement;
+    if (mode === 'dark' || mode === 'light') {
+      root.setAttribute('data-theme', mode);
+      if (persist) {
+        try {
+          localStorage.setItem(THEME_KEY, mode);
+        } catch (e) {}
+      }
+    } else {
+      root.removeAttribute('data-theme');
+      if (persist) {
+        try {
+          localStorage.removeItem(THEME_KEY);
+        } catch (e) {}
+      }
+    }
+    var effective = getEffectiveTheme();
+    updateThemeToggleUi(effective);
+    updateThemeMeta(effective);
+  }
+
+  function toggleTheme() {
+    var next = getEffectiveTheme() === 'dark' ? 'light' : 'dark';
+    applyTheme(next, true);
+  }
+
+  function initTheme() {
+    var stored = getStoredTheme();
+    if (stored) applyTheme(stored, false);
+    else updateThemeToggleUi(getEffectiveTheme());
+    updateThemeMeta(getEffectiveTheme());
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+        if (!getStoredTheme()) {
+          updateThemeToggleUi(getEffectiveTheme());
+          updateThemeMeta(getEffectiveTheme());
+        }
+      });
+    }
+  }
+
+  function loadBootstrap() {
+    var el = document.getElementById('contacts-bootstrap');
+    if (!el || !el.textContent) return null;
+    try {
+      var data = JSON.parse(el.textContent);
+      return Array.isArray(data) ? data : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function init() {
+    if (!els.list || !els.stats) {
+      if (els.stats) els.stats.textContent = 'שגיאה: עדכן Index.html';
+      return;
+    }
+
+    var token = loadToken();
+    setState(
+      {
+        adminToken: token,
+        skeleton: true,
+        syncing: true,
+      },
+      { render: false }
+    );
+    updateAdminUI();
+    installPwaHeadIcons_();
+    applyBrandLogo();
+    initTheme();
+    initInstallUi();
+    initScrollTop();
+
+    var boot = loadBootstrap();
+    if (boot && boot.length) {
+      var bootList = dedupeAndSort(boot);
+      setState({ contacts: bootList, skeleton: false }, { render: false });
+    } else {
+      var cached = loadCache();
+      if (cached && cached.length) {
+        setState({ contacts: cached, skeleton: false }, { render: false });
+      }
+    }
+    computeFilter();
+
+    gasRun('listContactsPublic')
+      .then(function (data) {
+        if (data.ok && data.contacts) {
+          var list = dedupeAndSort(data.contacts);
+          saveCache(list);
+          setState({ contacts: list });
+        }
+      })
+      .catch(function () {
+        if (!state.contacts.length) showToast('שגיאה בטעינה');
+      })
+      .then(function () {
+        setState({ syncing: false, skeleton: false }, { render: false });
+        setSyncing(false);
+        setSkeleton(false);
+        if (!state.contacts.length && !state.selectMode) els.stats.textContent = 'אין אנשי קשר';
+        computeFilter();
+      });
+  }
+
+  function bind(el, ev, fn) {
+    if (el) el.addEventListener(ev, fn);
+  }
+
+  bind(els.search, 'input', function () {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(applyFilter, SEARCH_DELAY);
+  });
+
+  bind(els.searchClear, 'click', function () {
+    els.search.value = '';
+    applyFilter();
+    els.search.focus();
+  });
+
+  bind(els.btnTheme, 'click', toggleTheme);
+
+  bind(els.btnRefresh, 'click', function () {
+    if (els.btnRefresh) els.btnRefresh.classList.add('spin-once');
+    setTimeout(function () {
+      if (els.btnRefresh) els.btnRefresh.classList.remove('spin-once');
+    }, 700);
+    refreshFromServer();
+    showToast('מרענן...');
+  });
+
+  bind(els.fabDedupe, 'click', function () {
+    requireAdmin(runDedupeSheet);
+  });
+
+  function initScrollTop() {
+    if (!els.btnScrollTop) return;
+    window.addEventListener(
+      'scroll',
+      function () {
+        var show = window.scrollY > 400;
+        els.btnScrollTop.classList.toggle('hidden', !show);
+      },
+      { passive: true }
+    );
+    els.btnScrollTop.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  bind(els.btnAdmin, 'click', function () {
+    if (isAdmin()) {
+      saveToken(null);
+      showToast('יצאת ממצב ניהול');
+    } else requireAdmin(function () {});
+  });
+
+  bind(els.fabMain, 'click', function () {
+    requireAdmin(function () {
+      els.fabMain.classList.toggle('admin-open');
+    });
+  });
+
+  bind(els.fabAdd, 'click', function () {
+    requireAdmin(openAdd);
+  });
+
+  bind(els.fabImport, 'click', function () {
+    requireAdmin(openImport);
+  });
+
+  bind(els.authCancel, 'click', function () {
+    closeDialog(els.authDialog);
+    setState({ pendingAction: null }, { render: false });
+  });
+
+  bind(els.authForm, 'submit', function (e) {
+    e.preventDefault();
+    var pw = String(new FormData(els.authForm).get('password') || '');
+    gasRun('verifyPasswordPublic', pw)
+      .then(function (res) {
+        if (!res.ok) {
+          showToast(res.error || 'סיסמה שגויה');
+          return;
+        }
+        saveToken(res.token);
+        closeDialog(els.authDialog);
+        showToast('מחובר – אפשר להוסיף ולייבא');
+        if (state.pendingAction) {
+          var fn = state.pendingAction;
+          setState({ pendingAction: null }, { render: false });
+          fn();
+        }
+      })
+      .catch(function (err) {
+        showToast('שגיאה: ' + (err.message || err));
+      });
+  });
+
+  bind(els.btnSelectMode, 'click', function () {
+    if (state.selectMode) exitSelectMode();
+    else enterSelectMode();
+  });
+
+  bind(els.btnSelectCancel, 'click', exitSelectMode);
+
+  bind(els.btnSelectAll, 'click', function () {
+    var allSelected = state.filtered.every(function (c) {
+      return state.selectedIds[contactKey(c)];
+    });
+    var next = Object.assign({}, state.selectedIds);
+    if (allSelected) {
+      state.filtered.forEach(function (c) {
+        delete next[contactKey(c)];
+      });
+    } else {
+      state.filtered.forEach(function (c) {
+        next[contactKey(c)] = c;
+      });
+    }
+    setState({ selectedIds: next }, { render: false });
+    updateSelectCount();
+    applyFilter();
+  });
+
+  bind(els.btnExport, 'click', exportSelected);
+
+  bind(els.addCancel, 'click', function () {
+    closeDialog(els.addDialog);
+  });
+  bind(els.actionClose, 'click', function () {
+    closeDialog(els.actionDialog);
+  });
+  bind(els.importClose, 'click', function () {
+    closeDialog(els.importDialog);
+  });
+
+  bind(els.addDialog, 'click', function (e) {
+    if (e.target === els.addDialog) closeDialog(els.addDialog);
+  });
+  bind(els.actionDialog, 'click', function (e) {
+    if (e.target === els.actionDialog) closeDialog(els.actionDialog);
+  });
+
+  var phoneInput = els.addForm.querySelector('input[name="phone"]');
+  if (phoneInput) {
+    phoneInput.addEventListener('input', function () {
+      phoneInput.value = formatPhoneInput(phoneInput.value);
+    });
+  }
+
+  bind(els.addForm, 'submit', function (e) {
+    e.preventDefault();
+    if (!isAdmin()) {
+      requireAdmin(function () {
+        els.addForm.dispatchEvent(new Event('submit'));
+      });
+      return;
+    }
+    var fd = new FormData(els.addForm);
+    var name = String(fd.get('name') || '').trim();
+    var phone = String(fd.get('phone') || '').trim();
+    var parts = name.split(/\s+/, 2);
+    if (!PHONE_REGEX.test(phone)) {
+      showToast('פורמט: 058-1234567 או 02-1234567 או +972-5X-XXXXXXX');
+      return;
+    }
+    var contact = {
+      firstName: parts[0] || '',
+      lastName: parts[1] || '',
+      phone: phone,
+      email: String(fd.get('email') || '').trim(),
+    };
+    els.addSubmit.disabled = true;
+    els.btnText.classList.add('hidden');
+    els.btnSpinner.classList.remove('hidden');
+    gasRun('addContactPublic', state.adminToken, contact)
+      .then(function (res) {
+        if (!res.ok) {
+          showToast(res.error || 'שגיאה');
+          if (res.error && res.error.indexOf('סיסמה') >= 0) saveToken(null);
+          return;
+        }
+        var merged = dedupeAndSort(state.contacts.concat([res.contact]));
+        saveCache(merged);
+        setState({ contacts: merged });
+        closeDialog(els.addDialog);
+        showToast('נשמר בגיליון!');
+        saveContactToDevice(res.contact);
+      })
+      .catch(function (err) {
+        showToast('שגיאה: ' + (err.message || err));
+      })
+      .then(function () {
+        els.addSubmit.disabled = false;
+        els.btnText.classList.remove('hidden');
+        els.btnSpinner.classList.add('hidden');
+      });
+  });
+
+  bind(els.importFile, 'change', function () {
+    if (els.importFile.files && els.importFile.files[0]) handleFile(els.importFile.files[0]);
+    els.importFile.value = '';
+  });
+
+  bind(els.btnPickDevice, 'click', pickFromDevice);
+
+  bind(els.btnCall, 'click', function () {
+    var c = state.selectedContact;
+    if (c && c.phone) window.open('tel:' + c.phone, '_top');
+    closeDialog(els.actionDialog);
+  });
+  bind(els.btnWhatsapp, 'click', function () {
+    var c = state.selectedContact;
+    if (c && c.phone) window.open('https://wa.me/' + normalizePhone(c.phone), '_blank');
+    closeDialog(els.actionDialog);
+  });
+  bind(els.btnCopy, 'click', function () {
+    var c = state.selectedContact;
+    if (!c || !c.phone) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(c.phone).then(function () {
+        showToast('הועתק ללוח!');
+      });
+    } else showToast(c.phone);
+    closeDialog(els.actionDialog);
+  });
+
+  bind(els.btnSaveDevice, 'click', function () {
+    if (!state.selectedContact) return;
+    saveContactToDevice(state.selectedContact);
+  });
+
+  bind(els.btnInstall, 'click', function () {
+    if (deferredInstallPrompt) runNativeInstall();
+    else openInstallDialog();
+  });
+
+  bind(els.installClose, 'click', function () {
+    closeDialog(els.installDialog);
+  });
+
+  bind(els.btnInstallNative, 'click', runNativeInstall);
+  bind(els.btnInstallNativeDesk, 'click', runNativeInstall);
+
+  bind(els.installDialog, 'click', function (e) {
+    if (e.target === els.installDialog) closeDialog(els.installDialog);
+  });
+
+  try {
+    init();
+  } catch (err) {
+    if (els.stats) els.stats.textContent = 'שגיאה: ' + (err.message || err);
+  }
+})();
+</script>
+  </body>
+</html>

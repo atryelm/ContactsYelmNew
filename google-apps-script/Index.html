@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+  <head>
+    <base target="_top" />
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0f1d42" id="meta-theme-color" />
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme_v1');
+          if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="אנשי קשר" />
+    <meta name="application-name" content="אנשי קשר" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <!-- אייקון מסך הבית: ב-Apps Script רק setFaviconUrl() ב-Code.gs (הקישורים כאן לא משמשים Chrome) -->
+    <link rel="icon" type="image/png" sizes="192x192" href="<?= getPublicPwaIconUrl_(192) ?>" />
+    <link rel="shortcut icon" type="image/png" href="<?= getPublicPwaIconUrl_(192) ?>" />
+    <link rel="apple-touch-icon" href="<?= getPublicPwaIconUrl_(192) ?>" />
+    <link rel="apple-touch-icon" sizes="180x180" href="<?= getPublicPwaIconUrl_(180) ?>" />
+    <link rel="apple-touch-icon" sizes="192x192" href="<?= getPublicPwaIconUrl_(192) ?>" />
+    <link rel="apple-touch-icon" sizes="512x512" href="<?= getPublicPwaIconUrl_(512) ?>" />
+    <meta property="og:image" content="<?= getPublicPwaIconUrl_(192) ?>" />
+    <meta name="twitter:image" content="<?= getPublicPwaIconUrl_(192) ?>" />
+    <link rel="manifest" href="<?= getWebAppUrlForClients_() ?>?action=manifest" />
+    <script type="application/json" id="brand-logo-bootstrap"><?!= getBrandLogoBootstrapJson_() ?></script>
+    <title>אנשי קשר - ישיבת אלון מורה</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style><?!= include('Styles'); ?></style>
+  </head>
+  <body>
+    <div class="bg-glow" aria-hidden="true"></div>
+    <div id="app">
+      <header class="hero">
+        <div class="hero-top">
+          <div class="brand">
+            <!-- contacts-app-v17 – לוגו מ-brand-logo-bootstrap בלבד (לא data URI ב-HTML) -->
+            <img
+              class="brand-logo"
+              id="brand-logo"
+              alt=""
+              width="56"
+              height="56"
+              decoding="async"
+              data-logo-v="17"
+              onerror="if(window.__logoFallback)window.__logoFallback(this)"
+            />
+            <script>
+              (function () {
+                var b = document.getElementById('brand-logo-bootstrap');
+                var img = document.getElementById('brand-logo');
+                if (!b || !img || img.dataset.logoLoaded) return;
+                try {
+                  var d = JSON.parse(b.textContent);
+                  function setData() {
+                    var src =
+                      d.type === 'dataUri'
+                        ? d.src
+                        : d.type === 'base64' && d.parts
+                          ? 'data:image/png;base64,' + d.parts.join('')
+                          : '';
+                    if (src) {
+                      img.src = src;
+                      img.dataset.logoLoaded = '1';
+                      img.removeAttribute('alt');
+                      return true;
+                    }
+                    return false;
+                  }
+                  if (!setData() && d.iconUrl) {
+                    img.src = d.iconUrl;
+                    img.dataset.logoLoaded = '1';
+                    img.removeAttribute('alt');
+                  }
+                } catch (e) {}
+              })();
+            </script>
+            <div>
+              <p class="brand-label">ישיבת אלון מורה</p>
+              <h1>אנשי קשר</h1>
+            </div>
+          </div>
+        </div>
+        <div class="hero-toolbar" role="toolbar" aria-label="פעולות ראשיות">
+          <button type="button" id="btn-theme" class="tool-btn tool-btn-theme" aria-label="מצב כהה" title="מצב כהה">
+            <span class="tool-icon" aria-hidden="true">
+              <svg class="ico-sun" viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="12" r="4" fill="currentColor"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              <svg class="ico-moon" viewBox="0 0 24 24" width="22" height="22"><path d="M21 14.5A8.5 8.5 0 1110.5 4 7 7 0 0021 14.5z" fill="currentColor"/></svg>
+            </span>
+            <span class="tool-label" id="theme-label">כהה</span>
+          </button>
+          <button type="button" id="btn-refresh" class="tool-btn" title="רענון רשימה" aria-label="רענון רשימה">
+            <span class="tool-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M17.65 6.35A7.95 7.95 0 0012 4V1L7 6l5 5V7c2.76 0 5 2.24 5 5 0 1.07-.34 2.07-.91 2.89l1.46 1.46A7.94 7.94 0 0020 12c0-2.21-.9-4.21-2.35-5.65zM6.35 17.65A7.95 7.95 0 0012 20v3l5-5-5-5v3c-2.76 0-5-2.24-5-5 0-1.07.34-2.07.91-2.89L6.45 8.7A7.94 7.94 0 004 12c0 2.21.9 4.21 2.35 5.65z"/></svg>
+            </span>
+            <span class="tool-label">רענון</span>
+          </button>
+          <button type="button" id="btn-install" class="tool-btn hidden" title="התקנת האפליקציה" aria-label="התקנת האפליקציה">
+            <span class="tool-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M5 20h14v-2H5v2zm7-18L5.33 9h3.67v4h6V9h3.67L12 2z"/></svg>
+            </span>
+            <span class="tool-label">התקנה</span>
+          </button>
+          <button type="button" id="btn-select-mode" class="tool-btn" title="בחירת אנשי קשר לייצוא" aria-label="בחירת אנשי קשר לייצוא">
+            <span class="tool-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            </span>
+            <span class="tool-label" id="select-label">בחירה</span>
+          </button>
+          <button type="button" id="btn-admin" class="tool-btn" title="כניסת ניהול" aria-label="כניסת ניהול">
+            <span class="tool-icon" aria-hidden="true">
+              <svg class="ico-lock" viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>
+              <svg class="ico-unlock" viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5-5.52 0-10 4.48-10 10v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM8.9 6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2H8.9V6z"/></svg>
+            </span>
+            <span class="tool-label" id="admin-label">ניהול</span>
+          </button></div><div id="sync-badge" class="sync-status hidden" role="status" aria-live="polite">
+          <span class="sync-dot" aria-hidden="true"></span>
+          <span>מסנכרן אנשי קשר...</span></div><div class="search-box">
+          <span class="search-ico" aria-hidden="true">🔍</span>
+          <input id="search" type="search" placeholder="חיפוש חכם: שם, טלפון, אימייל..." autocomplete="off" />
+          <button type="button" id="search-clear" class="search-clear hidden" aria-label="נקה חיפוש" title="נקה">×</button></div><p id="stats" class="stats">טוען...</p>
+      </header>
+
+      <main class="main">
+        <div id="skeleton" class="skeleton-list hidden">
+          <div class="sk-card"></div><div class="sk-card"></div><div class="sk-card"></div></div>
+        <ul id="contact-list" class="contact-list" role="list"></ul>
+        <div id="empty-state" class="empty-state hidden"><span class="empty-icon">🔎</span><p>לא נמצאו תוצאות</p></div>
+        <nav id="letter-nav" class="letter-nav hidden" aria-label="קפיצה לאות"></nav>
+      </main>
+
+      <button type="button" id="btn-scroll-top" class="scroll-top hidden" title="גלול למעלה" aria-label="גלול למעלה">
+        <span aria-hidden="true">↑</span>
+        <span class="scroll-top-label">למעלה</span>
+      </button>
+
+      <div id="fab-wrap" class="fab-wrap hidden">
+        <button type="button" id="fab-add" class="fab-mini" title="הוסף איש קשר">הוסף</button>
+        <button type="button" id="fab-import" class="fab-mini secondary" title="ייבוא מקובץ">ייבוא</button>
+        <button type="button" id="fab-dedupe" class="fab-mini secondary" title="מחק כפילויות בגיליון">כפילויות</button></div>
+      <button type="button" id="fab-main" class="fab" aria-label="תפריט ניהול" title="תפריט ניהול">
+        <span class="fab-plus" aria-hidden="true">+</span>
+        <span class="fab-label">ניהול</span>
+      </button>
+
+      <div id="select-bar" class="select-bar hidden">
+        <span id="select-count" class="select-count-text">0 נבחרו</span>
+        <div class="select-bar-actions">
+          <button type="button" id="btn-select-all" class="bar-btn" title="בחר את כל הרשימה">בחר הכל</button>
+          <button type="button" id="btn-export" class="bar-btn primary" title="ייצוא vCard">ייצוא</button>
+          <button type="button" id="btn-select-cancel" class="bar-btn ghost" title="ביטול מצב בחירה">ביטול</button></div></div>
+
+      <footer class="footer"><a href="https://wa.me/972586344879" target="_blank">© רועי בוכריס</a></footer>
+
+      <dialog id="auth-dialog" class="sheet sheet-form">
+        <div class="sheet-handle"></div>
+        <h2>כניסת ניהול</h2>
+        <p class="sheet-hint">הזן סיסמה כדי להוסיף או לייבא אנשי קשר</p>
+        <form id="auth-form">
+          <label class="field">
+            <span>סיסמה</span>
+            <input name="password" type="password" inputmode="numeric" autocomplete="off" required />
+          </label>
+          <div class="form-actions">
+            <button type="button" id="auth-cancel" class="sheet-btn ghost">ביטול</button>
+            <button type="submit" class="sheet-btn primary">אישור</button></div>
+        </form>
+      </dialog>
+
+      <dialog id="action-dialog" class="sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-head">
+          <div id="action-avatar" class="sheet-avatar">?</div>
+          <div><h2 id="action-name">שם</h2><p id="action-phone" class="sheet-sub"></p></div></div>
+        <div class="action-grid">
+          <button type="button" id="btn-call" class="action-tile call"><span>📞</span><small>התקשר</small></button>
+          <button type="button" id="btn-whatsapp" class="action-tile wa"><span>💬</span><small>וואטסאפ</small></button>
+          <button type="button" id="btn-save-device" class="action-tile save"><span>👤</span><small>שמור בטלפון</small></button>
+          <button type="button" id="btn-copy" class="action-tile copy"><span>📋</span><small>העתק</small></button></div>
+        <button type="button" id="action-close" class="sheet-btn ghost">סגור</button>
+      </dialog>
+
+      <dialog id="add-dialog" class="sheet sheet-form">
+        <div class="sheet-handle"></div>
+        <h2>איש קשר חדש</h2>
+        <form id="add-form">
+          <label class="field"><span>שם מלא</span><input name="name" required autocomplete="name" /></label>
+          <label class="field"><span>טלפון</span><input name="phone" required inputmode="tel" placeholder="058-1234567 / 02-1234567 / +972-5X-XXXXXXX" /></label>
+          <label class="field"><span>אימייל</span><input name="email" type="email" inputmode="email" /></label>
+          <div class="form-actions">
+            <button type="button" id="add-cancel" class="sheet-btn ghost">ביטול</button>
+            <button type="submit" id="add-submit" class="sheet-btn primary">
+              <span class="btn-text">שמור</span><span class="btn-spinner hidden"></span>
+            </button></div>
+        </form>
+      </dialog>
+
+      <dialog id="install-dialog" class="sheet sheet-form">
+        <div class="sheet-handle"></div>
+        <h2>התקנת האפליקציה</h2>
+        <p class="sheet-hint">הוסף קיצור דרך למסך הבית – עובד באייפון, אנדרואיד ומחשב</p>
+        <div id="install-steps-ios" class="install-steps hidden">
+          <p><strong>אייפון (Safari):</strong></p>
+          <ol>
+            <li>לחץ על כפתור <strong>שיתוף</strong> (החץ למעלה)</li>
+            <li>גלול ובחר <strong>הוסף למסך הבית</strong></li>
+            <li>לחץ <strong>הוסף</strong></li>
+          </ol></div>
+        <div id="install-steps-android" class="install-steps hidden">
+          <p><strong>אנדרואיד (Chrome):</strong></p>
+          <ol>
+            <li>מחק קיצור ישן מהמסך הבית (לחיצה ארוכה → הסר)</li>
+            <li>פתח את האתר, המתן שהלוגו בכותרת נטען</li>
+            <li>תפריט <strong>⋮</strong> → <strong>התקן אפליקציה</strong> (עדיף) או <strong>הוסף למסך הבית</strong></li>
+          </ol>
+          <button type="button" id="btn-install-native" class="sheet-btn primary block hidden">התקן עכשיו</button></div>
+        <div id="install-steps-desktop" class="install-steps hidden">
+          <p><strong>מחשב (Chrome / Edge):</strong></p>
+          <ol>
+            <li>חפש בסרגל הכתובת את סמל <strong>התקנה</strong> (⊕ או מחשב)</li>
+            <li>לחץ <strong>התקן</strong></li>
+          </ol>
+          <button type="button" id="btn-install-native-desk" class="sheet-btn primary block hidden">התקן עכשיו</button></div>
+        <button type="button" id="install-close" class="sheet-btn ghost">סגור</button>
+      </dialog>
+
+      <dialog id="import-dialog" class="sheet sheet-form">
+        <div class="sheet-handle"></div>
+        <h2>ייבוא אנשי קשר</h2>
+        <p class="sheet-hint">קובץ CSV או vCard מהטלפון / המחשב</p>
+        <div class="import-actions">
+          <button type="button" id="btn-pick-device" class="sheet-btn primary block">מהטלפון</button>
+          <label class="file-btn block">
+            בחר קובץ (CSV / vCard)
+            <input type="file" id="import-file" accept=".csv,.vcf,.vcard,text/vcard,text/csv" hidden />
+          </label></div>
+        <button type="button" id="import-close" class="sheet-btn ghost">סגור</button>
+      </dialog>
+
+      <div id="toast" class="toast" role="status"></div></div>
+    <script type="application/json" id="app-config"><?!= getAppConfigJson_() ?></script>
+    <script type="application/json" id="contacts-bootstrap"><?!= getBootstrapContactsJson_() ?></script>
+    <script><?!= includeScript('Client'); ?></script>
+  </body>
+</html>

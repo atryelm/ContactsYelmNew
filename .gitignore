@@ -1,0 +1,15 @@
+.DS_Store
+.idea/
+*.iml
+Thumbs.db
+
+# Node
+node_modules/
+package-lock.json
+
+# PWA – ערוך ב-GitHub את config.js עם כתובת /exec
+# (נשמר ב-repo עם placeholder)
+
+# מקומי בלבד
+.env
+*.log
