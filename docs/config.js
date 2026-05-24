@@ -3,4 +3,4 @@
  * כתובת Web App מ-Apps Script (חייבת להסתיים ב-/exec):
  * Deploy → Manage deployments → Web app URL
  */
-window.PWA_API_URL = 'https://script.google.com/macros/s/הדבק_כאן_מזהה_הפריסה/exec';
+window.PWA_API_URL = 'https://script.google.com/macros/s/AKfycbwFaW0E0NnEF6CPQD6ROYzMXk87b8wtvmwxNVAwWXwv5MAVN9KNbIad63jiVIVLwJvw/exec';
