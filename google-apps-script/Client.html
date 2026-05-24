@@ -31,8 +31,35 @@
       return false;
     }
     if (setData()) return true;
+    if (d.type === 'url' && d.iconUrl) {
+      setBrandLogoSrc_(img, d.iconUrl);
+      return true;
+    }
     if (d.iconUrl) {
       setBrandLogoSrc_(img, d.iconUrl);
+      return true;
+    }
+    return false;
+  }
+
+  function isPwaHost_() {
+    try {
+      var cfg = loadAppConfig();
+      return !!(cfg && cfg.pwaHost);
+    } catch (e) {}
+    return false;
+  }
+
+  function getLocalPwaLogoSrc_() {
+    if (!isPwaHost_()) return '';
+    return './icons/icon-192.png';
+  }
+
+  function applyLocalBrandLogo_() {
+    var src = getLocalPwaLogoSrc_();
+    var img = document.getElementById('brand-logo');
+    if (src && img && img.dataset.logoLoaded !== '1') {
+      setBrandLogoSrc_(img, src);
       return true;
     }
     return false;
@@ -58,7 +85,7 @@
   }
 
   function installPwaHeadIcons_() {
-    var href = getPwaIconHrefFromBootstrap_();
+    var href = getPwaIconHrefFromBootstrap_() || getLocalPwaLogoSrc_();
     if (
       !href ||
       /^data:/i.test(href) ||
@@ -98,28 +125,26 @@
     if (!el || el.dataset.logoFallback === '1') return;
     el.dataset.logoFallback = '1';
     if (loadBrandLogoFromBootstrap()) return;
-    if (typeof google === 'undefined' || !google.script || !google.script.run) return;
+    if (applyLocalBrandLogo_()) return;
     gasRun('getBrandLogoBootstrapPublic')
       .then(function (d) {
         applyBrandLogoPayload_(el, d);
       })
       .catch(function () {
+        if (applyLocalBrandLogo_()) return;
         gasRun('getBrandLogoBase64Public')
           .then(function (src) {
             if (src) setBrandLogoSrc_(el, src);
           })
           .catch(function () {
-            gasRun('getFallbackLogoDataUriPublic')
-              .then(function (src) {
-                if (src) setBrandLogoSrc_(el, src);
-              })
-              .catch(function () {});
+            applyLocalBrandLogo_();
           });
       });
   };
 
   function applyBrandLogo() {
     if (loadBrandLogoFromBootstrap()) return;
+    if (applyLocalBrandLogo_()) return;
     var el = document.getElementById('brand-logo');
     if (!el || el.tagName !== 'IMG') return;
     if (el.complete && el.naturalWidth > 0) return;

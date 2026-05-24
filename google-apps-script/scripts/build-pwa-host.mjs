@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url';
 const gasDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const repoRoot = path.resolve(gasDir, '..');
 const pwaDir = path.join(repoRoot, 'pwa-host');
+const docsDir = path.join(repoRoot, 'docs');
 const iconsDir = path.join(pwaDir, 'icons');
 const sourcePng = path.join(gasDir, 'assets', 'logo-yeshiva.png');
 
@@ -59,7 +60,13 @@ function buildIndexHtml(styles, client) {
   index = index.replace(/<meta property="og:image"[^>]*\/>\n    <meta name="twitter:image"[^>]*\/>/s, '');
   index = index.replace(
     /<script type="application\/json" id="brand-logo-bootstrap">[\s\S]*?<\/script>/,
-    '<script type="application/json" id="brand-logo-bootstrap">{}</script>'
+    '<script type="application/json" id="brand-logo-bootstrap">' +
+      JSON.stringify({
+        type: 'url',
+        iconUrl: './icons/icon-192.png',
+        pwaIconUrl: './icons/icon-192.png',
+      }) +
+      '</script>'
   );
   index = index.replace('<style><?!= include(\'Styles\'); ?></style>', `<style>${styles}</style>`);
   index = index.replace(
@@ -83,6 +90,23 @@ function buildIndexHtml(styles, client) {
   return index;
 }
 
+async function syncToDocs() {
+  fs.mkdirSync(docsDir, { recursive: true });
+  for (const name of fs.readdirSync(pwaDir)) {
+    const src = path.join(pwaDir, name);
+    const dest = path.join(docsDir, name);
+    if (fs.statSync(src).isDirectory()) {
+      fs.cpSync(src, dest, { recursive: true });
+    } else if (name !== 'config.js') {
+      fs.copyFileSync(src, dest);
+    }
+  }
+  if (!fs.existsSync(path.join(docsDir, 'config.js'))) {
+    fs.copyFileSync(path.join(pwaDir, 'config.example.js'), path.join(docsDir, 'config.js'));
+  }
+  console.log('✓ סונכרן ל-docs/ (GitHub Pages)');
+}
+
 async function main() {
   fs.mkdirSync(pwaDir, { recursive: true });
   const styles = fs.readFileSync(path.join(gasDir, 'Styles.html'), 'utf8');
@@ -97,8 +121,9 @@ async function main() {
   }
 
   await writeIcons();
+  await syncToDocs();
   console.log('נוצר:', path.join(pwaDir, 'index.html'));
-  console.log('פרוס את תיקיית pwa-host/ ל-GitHub Pages / Firebase Hosting');
+  console.log('פרוס: pwa-host/ או docs/ (GitHub Pages)');
 }
 
 main().catch(function (err) {
